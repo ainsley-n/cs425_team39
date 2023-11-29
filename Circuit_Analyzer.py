@@ -22,7 +22,6 @@ def perform_analysis(circuit, analysis_type):
 def perform_mesh_analysis(circuit):
     l = circuit.mesh_analysis()
     print(l.mesh_equations())
-    l.latex()
     # S domain
     l = circuit.laplace().mesh_analysis()
     print(l.mesh_equations())
