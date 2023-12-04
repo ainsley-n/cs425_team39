@@ -1,5 +1,6 @@
 # Lcapy Implementation
 from lcapy import *
+from numpy import logspace
 
 from lcapy import state; state.current_sign_convention = 'passive'
 
@@ -25,18 +26,10 @@ analysis_functions = {
     'State Space Analysis': lambda c: perform_state_space_analysis(c),
     'Loop Analysis': lambda c: perform_loop_analysis(c),
     'For Beginners': lambda: perform_beginner_analysis(),
+    'Plotting': lambda: perform_plot_analysis(),
     # Add more analysis types as needed
 }
 
-# Call the desired analysis and handle invalid types
-def perform_analysis(circuit, analysis_type):
-    
-    analysis_function = analysis_functions.get(analysis_type)
-    
-    if analysis_function:
-        analysis_function(circuit)
-    else:
-        print("Invalid analysis type. Please choose a valid analysis type.")
 
 # Mesh Analysis in time domain and laplace
 def perform_mesh_analysis(circuit):
@@ -174,16 +167,90 @@ def perform_beginner_analysis():
     circuit.draw()
 
     print("This is the transient voltage at the voltage source.")
-    circuit.V.v
+    circuit.V.v.pprint()
 
     print("This is the transient voltage at the resistor.")
-    circuit.R.v
+    circuit.R.v.pprint()
 
     print("This is the transient voltage at the capacitor.")
-    circuit.C.v
+    circuit.C.v.pprint()
 
     print("This is the plotted transient voltage across the resitor.")
     circuit.R.v.plot((-1, 10))
+
+# Display diagrams of plotted data
+def perform_plot_analysis():
+    # Each domain has different behavior for plotting
+    # Range of time values can be defined as a tuple
+
+    print("Available plotting types:")
+    print("1. Pole-Zero Plot")
+    print("2. Frequency Domain Plot")
+    print("3. Bode Plot")
+    print("4. Nyquist Plot")
+    print("5. Nichols Plot")
+    print("6. Phasor Plot")
+    print("7. Discrete-Time Plot")
+
+    # Get user input for plot type
+    plot_choice = input("Choose the analysis type (enter the corresponding number): ")
+
+    # Perform the selected plot
+    if plot_choice == '1':
+        # Pole zero plot, laplace
+        expr = input("Input your expression using the units s and j: ")
+        transExpr = transfer(expr)
+        # H = transfer((s - 2) * (s + 3) / (s * (s - 2 * j) * (s + 2 * j)))
+        transExpr.plot()
+        
+    elif plot_choice == '2':
+        # Frequency domain plot, fourier
+        # Note, this has a marginally stable impulse response since it has a pole at s = 0.
+        # Returns the axes used in the plot, returns tuple if multiple
+        expr = input("Input your expression using the units s and j: ")
+        transExpr = transfer(expr)
+        # H = transfer((s - 2) * (s + 3) / (s * (s - 2 * j) * (s + 2 * j)))
+        fv = logspace(-1, 3, 400)
+        transExpr(j2pif).dB.plot(fv, log_scale=True)
+        
+    elif plot_choice == '3':
+        # Bode plot
+        # Plots magnitude and phase as a log freq
+        expr = input("Input your expression using the unit s: ")
+        # expr = 1 / (s**2 + 20*s + 10000)
+        transExpr = transfer(expr)
+        transExpr.bode_plot((1, 1000))
+        
+    elif plot_choice == '4':
+        # Nyquist plot
+        # Plots imaginary and real frequency response
+        expr = input("Input your expression using the unit s: ")
+        #expr = 10 * (s + 1) * (s + 2) / ((s - 3) * (s - 4))
+        transExpr = transfer(expr)
+        transExpr.nyquist_plot((-100, 100))
+        
+    elif plot_choice == '5':
+        expr = input("Input your expression using the unit s: ")
+        # expr = 10 * (s + 1) * (s + 2) / ((s - 3) * (s - 4))
+        transExpr = transfer(expr)
+        transExpr.nichols_plot((-100, 100))
+        
+    elif plot_choice == '6':
+        expr = input("Input your expression using the unit j: ")
+        #phasor(1 + j).plot()
+        transExpr = transfer(expr)
+        phasor(transExpr).plot()
+        
+    elif plot_choice == '7':
+        expr = input("Input your expression using the unit n: ")
+        # cos(2 * n * 0.2).plot()
+        transExpr = transfer(expr)
+        cos(transExpr).plot()
+
+        expr = input("Input your complex expression using the unit n: ")
+        # x = 0.9**n * exp(j * n * 0.5)
+        transExpr = transfer(expr)
+        transExpr.plot((1, 10), polar=True)
 
 # Import netlist with pre-defined file path
 # file_path = 'D:/Circuit_Analyzer/testing/circuit.net'
@@ -243,11 +310,11 @@ W 2 6; up
 C1 5 6; right=2""")'''
 
 # DC volt divider for beginners
-circuit = Circuit("""
+'''circuit = Circuit("""
 V 1 0 6; down=1.5
 R1 1 2 2; right=1.5
 R2 2 0_2 4; down
-W 0 0_2; right""")
+W 0 0_2; right""")'''
 
 # Display analysis options to the user
 def display_menu():
@@ -265,6 +332,7 @@ def display_menu():
         '10': 'State Space Analysis',
         '11': 'Loop Analysis',
         '12': 'For Beginners',
+        '13': 'Plotting',
         '0': 'Exit'
     }
 
@@ -288,4 +356,3 @@ while True:
         print('\n\n')
         perform_analysis(circuit, analysis_options[analysis_choice])
     else:
-        print("Invalid input. Please enter a valid analysis number.")
