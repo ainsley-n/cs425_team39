@@ -25,11 +25,20 @@ analysis_functions = {
     'Norton-Thevenin Transformation': lambda c: perform_norton_transformation(c),
     'State Space Analysis': lambda c: perform_state_space_analysis(c),
     'Loop Analysis': lambda c: perform_loop_analysis(c),
-    'For Beginners': lambda: perform_beginner_analysis(),
-    'Plotting': lambda: perform_plot_analysis(),
+    'For Beginners': lambda c: perform_beginner_analysis(),
+    'Plotting': lambda c: perform_plot_analysis(),
     # Add more analysis types as needed
 }
 
+# Call the desired analysis and handle invalid types
+def perform_analysis(circuit, analysis_type):
+    
+    analysis_function = analysis_functions.get(analysis_type)
+    
+    if analysis_function:
+        analysis_function(circuit)
+    else:
+        print("Invalid analysis type. Please choose a valid analysis type.")
 
 # Mesh Analysis in time domain and laplace
 def perform_mesh_analysis(circuit):
@@ -167,13 +176,13 @@ def perform_beginner_analysis():
     circuit.draw()
 
     print("This is the transient voltage at the voltage source.")
-    circuit.V.v.pprint()
+    circuit.V.v
 
     print("This is the transient voltage at the resistor.")
-    circuit.R.v.pprint()
+    circuit.R.v
 
     print("This is the transient voltage at the capacitor.")
-    circuit.C.v.pprint()
+    circuit.C.v
 
     print("This is the plotted transient voltage across the resitor.")
     circuit.R.v.plot((-1, 10))
@@ -310,11 +319,11 @@ W 2 6; up
 C1 5 6; right=2""")'''
 
 # DC volt divider for beginners
-'''circuit = Circuit("""
+circuit = Circuit("""
 V 1 0 6; down=1.5
 R1 1 2 2; right=1.5
 R2 2 0_2 4; down
-W 0 0_2; right""")'''
+W 0 0_2; right""")
 
 # Display analysis options to the user
 def display_menu():
@@ -356,3 +365,4 @@ while True:
         print('\n\n')
         perform_analysis(circuit, analysis_options[analysis_choice])
     else:
+        print("Invalid input. Please enter a valid analysis number.")
