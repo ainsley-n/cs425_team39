@@ -12,7 +12,7 @@ def create_circuit_from_file(file_path):
     circuit = Circuit(netlist)
     return circuit
 
-# Dictionary to map analysis types to functions
+#dictionary for analysis by ainsley because this looks nicer and makes more sense
 analysis_functions = {
     'Draw circuit': lambda c: c.draw(),
     'Frequency response': lambda c: c.plot_freq_response(),
@@ -40,21 +40,49 @@ def perform_analysis(circuit, analysis_type):
     else:
         print("Invalid analysis type. Please choose a valid analysis type.")
 
-# Mesh Analysis in time domain and laplace
-def perform_mesh_analysis(circuit):
-    l = circuit.mesh_analysis()
-    print(l.mesh_equations())
-    # S domain
-    l = circuit.laplace().mesh_analysis()
-    print(l.mesh_equations())
 
-# Nodal Analysis in time domain and laplace
-def perform_nodal_analysis(circuit):
+#mesh Analysis in time domain and laplace
+#modified to print better by ainsley
+def perform_mesh_analysis(circuit):
+    #time domain
     l = circuit.mesh_analysis()
-    l.mesh_equations()
-    # S domain
+    mesh_equations = l.mesh_equations()
+
+    print("Mesh Equations (Time Domain):")
+    #print equations line by line
+    for variable, equation in mesh_equations.items():
+        print(f"{variable}: {equation}")
+
+    #LaPlace Domain
     l = circuit.laplace().mesh_analysis()
-    l.mesh_equations()
+    laplace_mesh_equations = l.mesh_equations()
+
+    print("\nMesh Equations (Laplace Domain):")
+    #print Laplace domain equations line by line
+    for variable, equation in laplace_mesh_equations.items():
+        print(f"{variable}: {equation}")
+        
+        
+#nodal analysis equations done by ainsley
+def perform_nodal_analysis(circuit):
+    #time domain
+    nodal_result = circuit.nodal_analysis()
+    nodal_equations = nodal_result.nodal_equations()
+
+    print("Nodal Equations (Time Domain):")
+    #print equations line by line
+    for node, equation in nodal_equations.items():
+        print(f"V_{node}: {equation}")
+
+    #Laplace domain
+    laplace_result = circuit.laplace().nodal_analysis()
+    laplace_nodal_equations = laplace_result.nodal_equations()
+
+    print("\nNodal Equations (Laplace Domain):")
+    #print Laplace domain equations line by line
+    for node, equation in laplace_nodal_equations.items():
+        print(f"V_{node}(s): {equation}")
+
 
 # State Space Analysis
 def perform_state_space_analysis(circuit):
@@ -266,17 +294,17 @@ def perform_plot_analysis():
 # circuit = create_circuit_from_file(file_path)
 
 # Main example circuit: Mesh, Nodal, Loop, Thevenin, Norton
-'''circuit = Circuit("""
-...V1 1 0; down
-...R1 1 2; right
-...L1 2 3; right
-...R2 3 4; right
-...L2 2 0_2; down
-...C2 3 0_3; down
-...R3 4 0_4; down
-...W 0 0_2; right
-...W 0_2 0_3; right
-...W 0_3 0_4; right""")'''
+circuit = Circuit("""
+V1 1 0; down
+R1 1 2; right
+L1 2 3; right
+R2 3 4; right
+L2 2 0_2; down
+C2 3 0_3; down
+R3 4 0_4; down
+W 0 0_2; right
+W 0_2 0_3; right
+W 0_3 0_4; right""")
 
 # Thevenin example circuit, nodes 2 & 0
 '''circuit = Circuit("""
@@ -319,13 +347,13 @@ W 2 6; up
 C1 5 6; right=2""")'''
 
 # DC volt divider for beginners
-circuit = Circuit("""
+'''circuit = Circuit("""
 V 1 0 6; down=1.5
 R1 1 2 2; right=1.5
 R2 2 0_2 4; down
-W 0 0_2; right""")
+W 0 0_2; right""")'''
 
-# Display analysis options to the user
+#menu for analysis options
 def display_menu():
     print("\n\nAvailable analysis types:")
     analysis_options = {
@@ -350,18 +378,17 @@ def display_menu():
 
     return analysis_options
 
-# Get user input for analysis type
+#ainsley modified the user menu to make more sense in python
 while True:
-    # Display the menu and get user input
+    #display the menu and get user input
     analysis_options = display_menu()
     analysis_choice = input("Choose the analysis type (enter the corresponding number, 0 to exit): ")
     if analysis_choice == '0':
         print("Exiting the program. Goodbye!\n")
         break
 
-    # Validate the user input
+    #check for user input error
     if analysis_choice in analysis_options.keys():
-        # Perform the selected analysis
         print('\n\n')
         perform_analysis(circuit, analysis_options[analysis_choice])
     else:
