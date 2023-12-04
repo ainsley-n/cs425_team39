@@ -11,31 +11,32 @@ def create_circuit_from_file(file_path):
     circuit = Circuit(netlist)
     return circuit
 
-# Call the desired analysis
-def perform_analysis(circuit, analysis_type):
-    if analysis_type == 'draw':
-        circuit.draw()
-    elif analysis_type == 'freq_response':
-        circuit.plot_freq_response()
-    elif analysis_type == 'mesh':
-        perform_mesh_analysis(circuit)
-    elif analysis_type == 'nodal':
-        perform_nodal_analysis(circuit)
-    elif analysis_type == 'thevenin':
-        perform_thevenin_analysis(circuit)
-    elif analysis_type == 'norton':
-        perform_norton_analysis(circuit)
-    elif analysis_type == 'theveninTrans':
-        perform_thevenin_transformation(circuit)
-    elif analysis_type == 'nortonTrans':
-        perform_norton_transformation(circuit)
-    elif analysis_type == 'state_space':
-        perform_state_space_analysis(circuit)
-    elif analysis_type == 'loop':
-        perform_loop_analysis(circuit)
-    elif analysis_type == 'beginner':
-        perform_beginner_analysis()
+# Dictionary to map analysis types to functions
+analysis_functions = {
+    'Draw circuit': lambda c: c.draw(),
+    'Frequency response': lambda c: c.plot_freq_response(),
+    'Mesh analysis': lambda c: perform_mesh_analysis(c),
+    'Nodal analysis': lambda c: perform_nodal_analysis(c),
+    'Description': lambda c: c.describe(),
+    'Thevenin Analysis': lambda c: perform_thevenin_analysis(c),
+    'Norton Analysis': lambda c: perform_norton_analysis(c),
+    'Thevenin-Norton Transformation': lambda c: perform_thevenin_transformation(c),
+    'Norton-Thevenin Transformation': lambda c: perform_norton_transformation(c),
+    'State Space Analysis': lambda c: perform_state_space_analysis(c),
+    'Loop Analysis': lambda c: perform_loop_analysis(c),
+    'For Beginners': lambda: perform_beginner_analysis(),
     # Add more analysis types as needed
+}
+
+# Call the desired analysis and handle invalid types
+def perform_analysis(circuit, analysis_type):
+    
+    analysis_function = analysis_functions.get(analysis_type)
+    
+    if analysis_function:
+        analysis_function(circuit)
+    else:
+        print("Invalid analysis type. Please choose a valid analysis type.")
 
 # Mesh Analysis in time domain and laplace
 def perform_mesh_analysis(circuit):
@@ -249,48 +250,42 @@ R2 2 0_2 4; down
 W 0 0_2; right""")
 
 # Display analysis options to the user
-print("Available analysis types:")
-print("1. Draw circuit")
-print("2. Frequency response")
-print("3. Mesh analysis")
-print("4. Nodal analysis")
-print("5. Description")
-print("6. Thevenin Analysis")
-print("7. Norton Analysis")
-print("8. Thevenin-Norton Transformation")
-print("9. Norton-Thevenin Transformation")
-print("10. State Space Analysis")
-print("11. Loop Analysis")
-print("12. For Beginners")
+def display_menu():
+    print("\n\nAvailable analysis types:")
+    analysis_options = {
+        '1': 'Draw circuit',
+        '2': 'Frequency response',
+        '3': 'Mesh analysis',
+        '4': 'Nodal analysis',
+        '5': 'Description',
+        '6': 'Thevenin Analysis',
+        '7': 'Norton Analysis',
+        '8': 'Thevenin-Norton Transformation',
+        '9': 'Norton-Thevenin Transformation',
+        '10': 'State Space Analysis',
+        '11': 'Loop Analysis',
+        '12': 'For Beginners',
+        '0': 'Exit'
+    }
+
+    for key, value in analysis_options.items():
+        print(f"{key}. {value}")
+
+    return analysis_options
 
 # Get user input for analysis type
-analysis_choice = input("Choose the analysis type (enter the corresponding number): ")
+while True:
+    # Display the menu and get user input
+    analysis_options = display_menu()
+    analysis_choice = input("Choose the analysis type (enter the corresponding number, 0 to exit): ")
+    if analysis_choice == '0':
+        print("Exiting the program. Goodbye!\n")
+        break
 
-# Perform the selected analysis
-if analysis_choice == '1':
-    perform_analysis(circuit, 'draw')
-elif analysis_choice == '2':
-    perform_analysis(circuit, 'freq_response')
-elif analysis_choice == '3':
-    perform_analysis(circuit, 'mesh')
-elif analysis_choice == '4':
-    perform_analysis(circuit, 'nodal')
-elif analysis_choice == '5':
-    circuit.describe()
-elif analysis_choice == '6':
-    perform_analysis(circuit, 'thevenin')
-elif analysis_choice == '7':
-    perform_analysis(circuit, 'norton')
-elif analysis_choice == '8':
-    perform_analysis(circuit, 'theveninTrans')
-elif analysis_choice == '9':
-    perform_analysis(circuit, 'nortonTrans')
-elif analysis_choice == '10':
-    perform_analysis(circuit, 'state_space')
-elif analysis_choice == '11':
-    perform_analysis(circuit, 'loop')
-elif analysis_choice == '12':
-    perform_analysis(circuit, 'beginner')
-# Add more conditions for additional analysis types
-
-# Note: add error handling for invalid user input
+    # Validate the user input
+    if analysis_choice in analysis_options.keys():
+        # Perform the selected analysis
+        print('\n\n')
+        perform_analysis(circuit, analysis_options[analysis_choice])
+    else:
+        print("Invalid input. Please enter a valid analysis number.")
