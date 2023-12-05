@@ -24,29 +24,29 @@ def parse_netlist(netlist):
     current_component = None
 
     for line in str(netlist).split('\n'):
-        if line.strip():  # Check if the line is not empty
+        if line.strip(): 
             parts = line.split()
             component_type = parts[0]
             print(f'component_type: {component_type}')
 
-            # Extract nodes, excluding the semicolon
+            #extract nodes, exclude the semicolon
             nodes_str = ' '.join(parts[1:-1]).rstrip(';')
             print(f'nodes_str: {nodes_str}')
 
-            # Split the combined string into nodes based on semicolon
+            #split the combined string based on semicolon
             nodes = tuple(int(node) if node.isdigit() else node for node in nodes_str.split())
             print(f'nodes: {nodes}')
 
-            # If it's a new component, start a new tuple
+            #if it's a new component start new tuple
             if current_component is None:
                 current_component = nodes
             else:
-                # If it's the same component, update the end node
+                #if it's the same component update end node
                 current_component = (current_component[0], nodes[1])
                 
             print(f'current component: {current_component}')
 
-            # If it's the last line of the component, add it to the list
+            #if it's the last line add it to list
             if parts[-1][-1] != ';':
                 components.append((component_type, current_component))
                 current_component = None
@@ -57,7 +57,8 @@ def parse_netlist(netlist):
 def organize_components(components):
     node_dict = {}
     for component_type, nodes in components:
-        if component_type != 'W':  # Exclude 'W' components
+        #'W' doesn't count as a component
+        if component_type != 'W':
             for node in nodes:
                 normalized_node = str(node).split('_')[0] if '_' in str(node) else str(node)
                 if normalized_node not in node_dict:
@@ -71,7 +72,7 @@ def sort_by_node(organized_components):
     for node, components in organized_components.items():
         sorted_components_list = []
         for component_type, nodes in components:
-            # Handle both integer and string nodes
+            #handle integer and string nodes
             normalized_nodes = [str(node).split('_')[0] if '_' in str(node) else str(node) for node in nodes]
             sorted_components_list.append({component_type: normalized_nodes})
         sorted_components_dict[node] = sorted_components_list
@@ -83,13 +84,13 @@ def sort_by_node(organized_components):
 
 
 def perform_mesh_analysis(circuit):
-    # Parse and organize components
+    #organize components
     components = parse_netlist(circuit)
     organized_components = organize_components(components)
     print(f'Organized Components {organized_components}\n')
 
-    # Print organized components
     sorted_components = sort_by_node(organized_components)
+    #print sorted components
     print(f'Sorted Components')
     for node, components_list in sorted_components.items():
         print(f"{node}:")
