@@ -1,3 +1,6 @@
+#import needed files for analysis
+from mesh_analysis import perform_mesh_analysis
+
 # Lcapy Implementation
 from lcapy import *
 from numpy import logspace
@@ -15,9 +18,18 @@ def create_circuit_from_file(file_path):
 #dictionary for analysis by ainsley because this looks nicer and makes more sense
 analysis_functions = {
     'Draw circuit': lambda c: c.draw(),
+    
+    #do we really need this one??|
+        #                        v   
     'Frequency response': lambda c: c.plot_freq_response(),
+    #????????????????????????????????
+    
+    #i am going to improve 
     'Mesh analysis': lambda c: perform_mesh_analysis(c),
     'Nodal analysis': lambda c: perform_nodal_analysis(c),
+    #these to be more complete 
+    
+    
     'Description': lambda c: c.describe(),
     'Thevenin Analysis': lambda c: perform_thevenin_analysis(c),
     'Norton Analysis': lambda c: perform_norton_analysis(c),
@@ -40,28 +52,6 @@ def perform_analysis(circuit, analysis_type):
     else:
         print("Invalid analysis type. Please choose a valid analysis type.")
 
-
-#mesh Analysis in time domain and laplace
-#modified to print better by ainsley
-def perform_mesh_analysis(circuit):
-    #time domain
-    l = circuit.mesh_analysis()
-    mesh_equations = l.mesh_equations()
-
-    print("Mesh Equations (Time Domain):")
-    #print equations line by line
-    for variable, equation in mesh_equations.items():
-        print(f"{variable}: {equation}")
-
-    #LaPlace Domain
-    l = circuit.laplace().mesh_analysis()
-    laplace_mesh_equations = l.mesh_equations()
-
-    print("\nMesh Equations (Laplace Domain):")
-    #print Laplace domain equations line by line
-    for variable, equation in laplace_mesh_equations.items():
-        print(f"{variable}: {equation}")
-        
         
 #nodal analysis equations done by ainsley
 def perform_nodal_analysis(circuit):
