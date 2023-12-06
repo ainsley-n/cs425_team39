@@ -1,0 +1,236 @@
+#import needed files for analysis
+from mesh_analysis import perform_mesh_analysis
+from state_analysis import perform_state_space_analysis
+from plot_analysis import perform_plot_analysis
+from beginner_analysis import perform_beginner_analysis
+
+# Lcapy Implementation
+from lcapy import *
+from numpy import logspace
+
+from lcapy import state; state.current_sign_convention = 'passive'
+
+# Import an existing netlist 
+def create_circuit_from_file(file_path):
+    with open(file_path, 'r') as file:
+        netlist = file.read()
+
+    circuit = Circuit(netlist)
+    return circuit
+
+#dictionary for analysis by ainsley because this looks nicer and makes more sense
+analysis_functions = {
+    'Draw circuit': lambda c: c.draw(),
+    
+    #do we really need this one??| No it's mostly replaced by plot analysis
+        #                        v   
+    'Frequency response': lambda c: c.plot_freq_response(),
+    #????????????????????????????????
+    
+    #i am going to improve 
+    'Mesh analysis': lambda c: perform_mesh_analysis(c),
+    'Nodal analysis': lambda c: perform_nodal_analysis(c),
+    #these to be more complete 
+    
+    
+    'Description': lambda c: c.description(),
+    'Thevenin Analysis': lambda c: perform_thevenin_analysis(c),
+    'Norton Analysis': lambda c: perform_norton_analysis(c),
+    'Thevenin-Norton Transformation': lambda c: perform_thevenin_transformation(c),
+    'Norton-Thevenin Transformation': lambda c: perform_norton_transformation(c),
+    'State Space Analysis': lambda c: perform_state_space_analysis(c),
+    'Loop Analysis': lambda c: perform_loop_analysis(c),
+    'For Beginners': lambda c: perform_beginner_analysis(),
+    'Plotting': lambda c: perform_plot_analysis(),
+    # Add more analysis types as needed
+}
+
+# Call the desired analysis and handle invalid types
+def perform_analysis(circuit, analysis_type):
+    
+    analysis_function = analysis_functions.get(analysis_type)
+    
+    if analysis_function:
+        analysis_function(circuit)
+    else:
+        print("Invalid analysis type. Please choose a valid analysis type.")
+
+        
+#nodal analysis equations done by ainsley
+def perform_nodal_analysis(circuit):
+    #time domain
+    nodal_result = circuit.nodal_analysis()
+    nodal_equations = nodal_result.nodal_equations()
+
+    print("Nodal Equations (Time Domain):")
+    #print equations line by line
+    for node, equation in nodal_equations.items():
+        print(f"V_{node}: {equation}")
+
+    #Laplace domain
+    laplace_result = circuit.laplace().nodal_analysis()
+    laplace_nodal_equations = laplace_result.nodal_equations()
+
+    print("\nNodal Equations (Laplace Domain):")
+    #print Laplace domain equations line by line
+    for node, equation in laplace_nodal_equations.items():
+        print(f"V_{node}(s): {equation}")
+
+
+# State Space Analysis moved to separate file
+
+# Thevenin Analysis of a linear subcircuit with user defined nodes
+def perform_thevenin_analysis(circuit):
+    # Take input for start and end node
+    startNode = input("Input start node as number: ")
+    endNode = input("Input end node as number: ")
+    thevenin = circuit.thevenin(startNode, endNode)
+    thevenin.pprint()
+
+# Norton Analysis of a linear subcircuit with user defined nodes
+def perform_norton_analysis(circuit):
+    # Take input for start and end node
+    startNode = input("Input start node as number: ")
+    endNode = input("Input end node as number: ")
+    norton = circuit.norton(startNode, endNode)
+    norton.pprint()
+
+# Thevenin Transformation to norton equivalent using user defined voltage and resistance
+def perform_thevenin_transformation(circuit):
+    # Take input for volatge and resistance
+    v = input("Input voltage as number: ")
+    r = input("Input resistance as number: ")
+    T = Vdc(v) + R(r)
+    n = T.norton()
+    n.pprint()
+
+# Norton Transformation to thevenin equivalent using user defined current and resistance
+def perform_norton_transformation(circuit):
+    # Take input for volatge and resistance
+    i = input("Input current as number: ")
+    r = input("Input resistance as number: ")
+    n = Idc(i) | R(r)
+    T = n.thevenin()
+    T.pprint()
+
+# Loop Analysis best used for showing equations: Loop, KVL, Mesh
+def perform_loop_analysis(circuit):
+    # Loop analysis in time domain
+    la = LoopAnalysis(circuit)
+
+    # Display KVL equations around each mesh
+    la.mesh_equations().pprint()
+
+    # Display system of equations in matrix form
+    # la.matrix_equations().pprint()
+    # Need to convert from time domain to dc, ac, or laplace
+    LoopAnalysis(circuit.laplace()).matrix_equations().pprint()
+    
+# Beginner Analysis for introducing new users moved to separate file
+
+# Display diagrams of plotted data moved to seaparate file
+
+# Import netlist with pre-defined file path
+# file_path = 'D:/Circuit_Analyzer/testing/circuit.net'
+# circuit = create_circuit_from_file(file_path)
+
+# Main example circuit: Mesh, Nodal, Loop, Thevenin, Norton
+'''circuit = Circuit("""
+V1 1 0; down
+R1 1 2; right
+L1 2 3; right
+R2 3 4; right
+L2 2 0_2; down
+C2 3 0_3; down
+R3 4 0_4; down
+W 0 0_2; right
+W 0_2 0_3; right
+W 0_3 0_4; right""")'''
+
+# Thevenin example circuit, nodes 2 & 0
+'''circuit = Circuit("""
+...V1 1 0 V; down
+...R1 1 2 R; right
+...C1 2 0_2 C; down
+...W 0 0_2; right""")'''
+
+# State-Space example
+circuit = Circuit("""
+V 1 0 {v(t)}; down
+R1 1 2; right
+L 2 3; right=1.5, i={i_L}
+R2 3 0_3; down=1.5, i={i_{R2}}, v={v_{R2}}
+W 0 0_3; right
+W 3 3_a; right
+C 3_a 0_4; down, i={i_C}, v={v_C}
+W 0_3 0_4; right""")
+
+# Display use-cases example
+'''circuit = Circuit("""
+V_s fred 0
+R_a fred 1
+R_b 1 0""")'''
+# Display branch voltages or current circuit.componentName.property.pprint()
+# circuit.V_s.V.pprint()
+# circuit.R_a.I.pprint()
+# Display node voltages using name or index circuit.componentName.property.pprint() or circuit[index].property.pprint()
+# circuit['fred'].V.pprint()
+# circuit[1].V.pprint()
+
+# Loop analysis example 
+'''circuit = Circuit("""
+V1 1 0 {u(t)}; down
+R1 1 2; right=2
+L1 2 3; down=2
+W1 0 3; right
+W 1 5; up
+W 2 6; up
+C1 5 6; right=2""")'''
+
+# DC volt divider for beginners
+'''circuit = Circuit("""
+V 1 0 6; down=1.5
+R1 1 2 2; right=1.5
+R2 2 0_2 4; down
+W 0 0_2; right""")'''
+
+#menu for analysis options
+def display_menu():
+    print("\n\nAvailable analysis types:")
+    analysis_options = {
+        '1': 'Draw circuit',
+        '2': 'Frequency response',
+        '3': 'Mesh analysis',
+        '4': 'Nodal analysis',
+        '5': 'Description',
+        '6': 'Thevenin Analysis',
+        '7': 'Norton Analysis',
+        '8': 'Thevenin-Norton Transformation',
+        '9': 'Norton-Thevenin Transformation',
+        '10': 'State Space Analysis',
+        '11': 'Loop Analysis',
+        '12': 'For Beginners',
+        '13': 'Plotting',
+        '0': 'Exit'
+    }
+
+    for key, value in analysis_options.items():
+        print(f"{key}. {value}")
+
+    return analysis_options
+
+#ainsley modified the user menu to make more sense in python
+while True:
+    #display the menu and get user input
+    analysis_options = display_menu()
+    analysis_choice = input("Choose the analysis type (enter the corresponding number, 0 to exit): ")
+    if analysis_choice == '0':
+        print("Exiting the program. Goodbye!\n")
+        break
+
+    #check for user input error
+    if analysis_choice in analysis_options.keys():
+        print('\n\n')
+        perform_analysis(circuit, analysis_options[analysis_choice])
+    else:
+        print("Invalid input. Please enter a valid analysis number.")
