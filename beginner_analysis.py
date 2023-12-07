@@ -2,6 +2,8 @@ from lcapy import *
 
 # Beginner Analysis for introducing new users
 def perform_beginner_analysis():
+    print("This analysis demonstrates the avalible functionalities and how they operate with different circuits.")
+    
     # DC volt divider for beginners
     circuit = Circuit("""
     V 1 0 6; down=1.5
@@ -14,7 +16,7 @@ def perform_beginner_analysis():
     print("Circuits given as netlists can be analyzed and drawn.")
     circuit.draw()
 
-    # Display voltage at noode 1
+    # Display voltage at node 1
     print("Node voltages can be displayed given the node. This is the voltage at node 1.")
     circuit[1].v.pprint()
     # Display voltage at node 2

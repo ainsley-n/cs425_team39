@@ -19,7 +19,9 @@ def create_circuit_from_file(file_path):
     return circuit
 
 def request_component_property(circuit):
-    # DC volt divider for beginners
+    # Testing
+    print("Testing")
+    '''# DC volt divider for beginners
     circuit = Circuit("""
     V 1 0 6; down=1.5
     R1 1 2 2; right=1.5
@@ -35,7 +37,7 @@ def request_component_property(circuit):
     print(componentName)
     property = input("Give the desired property as V or I: ")
     print(property)
-    circuit.componentName.property.pprint()
+    circuit.componentName.property.pprint()'''
 
 def request_node_property(circuit):
     # DC volt divider for beginners
@@ -61,11 +63,6 @@ def request_node_property(circuit):
 analysis_functions = {
     'Draw circuit': lambda c: c.draw(),
     
-    #do we really need this one??| No it's mostly replaced by plot analysis
-        #                        v   
-    'Frequency response': lambda c: c.plot_freq_response(),
-    #????????????????????????????????
-    
     #i am going to improve 
     'Mesh analysis': lambda c: perform_mesh_analysis(c),
     'Nodal analysis': lambda c: perform_nodal_analysis(c),
@@ -78,7 +75,6 @@ analysis_functions = {
     'Thevenin-Norton Transformation': lambda c: perform_thevenin_transformation(c),
     'Norton-Thevenin Transformation': lambda c: perform_norton_transformation(c),
     'State Space Analysis': lambda c: perform_state_space_analysis(c),
-    'Loop Analysis': lambda c: perform_loop_analysis(c),
     'For Beginners': lambda c: perform_beginner_analysis(),
     'Plotting': lambda c: perform_plot_analysis(),
     'Component Property': lambda c: request_component_property(c),
@@ -122,61 +118,54 @@ def perform_nodal_analysis(circuit):
 
 # Thevenin Analysis of a linear subcircuit with user defined nodes
 def perform_thevenin_analysis(circuit):
+    print("This analysis is used to find Thevenin equivalent values between a starting and an end node of a circuit.")
     # Take input for start and end node
     startNode = input("Input start node as number: ")
     endNode = input("Input end node as number: ")
     thevenin = circuit.thevenin(startNode, endNode)
     thevenin.pprint()
+    thevenin.draw()
 
 # Norton Analysis of a linear subcircuit with user defined nodes
 def perform_norton_analysis(circuit):
+    print("This analysis is used to find Norton equivalent values between a starting and an end node of a circuit.")
     # Take input for start and end node
     startNode = input("Input start node as number: ")
     endNode = input("Input end node as number: ")
     norton = circuit.norton(startNode, endNode)
     norton.pprint()
+    norton.draw()
 
 # Thevenin Transformation to norton equivalent using user defined voltage and resistance
 def perform_thevenin_transformation(circuit):
+    print("This function transforms a given Thevenin circuit to its Norton equivalent.")
     # Take input for volatge and resistance
     v = input("Input voltage as number: ")
     r = input("Input resistance as number: ")
     T = Vdc(v) + R(r)
     n = T.norton()
+    print("These are the new values and drawing for your Norton equivalent circuit.")
     n.pprint()
+    n.draw()
 
 # Norton Transformation to thevenin equivalent using user defined current and resistance
 def perform_norton_transformation(circuit):
+    print("This function transforms a given Norton circuit to its Thevenin equivalent.")
     # Take input for volatge and resistance
     i = input("Input current as number: ")
     r = input("Input resistance as number: ")
     n = Idc(i) | R(r)
     T = n.thevenin()
+    print("These are the new values and drawing for your Thevenin equivalent circuit.")
     T.pprint()
-
-# Loop Analysis best used for showing equations: Loop, KVL, Mesh
-def perform_loop_analysis(circuit):
-    # Loop analysis in time domain
-    la = LoopAnalysis(circuit)
-
-    # Display KVL equations around each mesh
-    la.mesh_equations().pprint()
-
-    # Display system of equations in matrix form
-    # la.matrix_equations().pprint()
-    # Need to convert from time domain to dc, ac, or laplace
-    LoopAnalysis(circuit.laplace()).matrix_equations().pprint()
-    
-# Beginner Analysis for introducing new users moved to separate file
-
-# Display diagrams of plotted data moved to seaparate file
+    T.draw()
 
 # Import netlist with pre-defined file path
 # file_path = 'D:/Circuit_Analyzer/testing/circuit.net'
 # circuit = create_circuit_from_file(file_path)
 
 # Main example circuit: Mesh, Nodal, Loop, Thevenin, Norton
-'''circuit = Circuit("""
+circuit = Circuit("""
 V1 1 0; down
 R1 1 2; right
 L1 2 3; right
@@ -186,17 +175,17 @@ C2 3 0_3; down
 R3 4 0_4; down
 W 0 0_2; right
 W 0_2 0_3; right
-W 0_3 0_4; right""")'''
+W 0_3 0_4; right""")
 
 # Thevenin example circuit, nodes 2 & 0
-'''circuit = Circuit("""
+circuit = Circuit("""
 ...V1 1 0 V; down
 ...R1 1 2 R; right
 ...C1 2 0_2 C; down
-...W 0 0_2; right""")'''
+...W 0 0_2; right""")
 
 # State-Space example
-circuit = Circuit("""
+'''circuit = Circuit("""
 V 1 0 {v(t)}; down
 R1 1 2; right
 L 2 3; right=1.5, i={i_L}
@@ -204,7 +193,7 @@ R2 3 0_3; down=1.5, i={i_{R2}}, v={v_{R2}}
 W 0 0_3; right
 W 3 3_a; right
 C 3_a 0_4; down, i={i_C}, v={v_C}
-W 0_3 0_4; right""")
+W 0_3 0_4; right""")'''
 
 # Display use-cases example
 '''circuit = Circuit("""
@@ -240,20 +229,18 @@ def display_menu():
     print("\n\nAvailable analysis types:")
     analysis_options = {
         '1': 'Draw circuit',
-        '2': 'Frequency response',
-        '3': 'Mesh analysis',
-        '4': 'Nodal analysis',
-        '5': 'Description',
-        '6': 'Thevenin Analysis',
-        '7': 'Norton Analysis',
-        '8': 'Thevenin-Norton Transformation',
-        '9': 'Norton-Thevenin Transformation',
-        '10': 'State Space Analysis',
-        '11': 'Loop Analysis',
-        '12': 'For Beginners',
-        '13': 'Plotting',
-        '14': 'Component Property',
-        '15': 'Node Property',
+        '2': 'Mesh analysis',
+        '3': 'Nodal analysis',
+        '4': 'Description',
+        '5': 'Thevenin Analysis',
+        '6': 'Norton Analysis',
+        '7': 'Thevenin-Norton Transformation',
+        '8': 'Norton-Thevenin Transformation',
+        '9': 'State Space Analysis',
+        '10': 'For Beginners',
+        '11': 'Plotting',
+        '12': 'Component Property',
+        '13': 'Node Property',
         '0': 'Exit'
     }
 
