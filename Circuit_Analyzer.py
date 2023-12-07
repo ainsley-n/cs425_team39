@@ -30,13 +30,13 @@ analysis_functions = {
     #these to be more complete 
     
     
-    'Description': lambda c: c.describe(),
+    'Description': lambda c: c.description(),
     'Thevenin Analysis': lambda c: perform_thevenin_analysis(c),
     'Norton Analysis': lambda c: perform_norton_analysis(c),
     'Thevenin-Norton Transformation': lambda c: perform_thevenin_transformation(c),
     'Norton-Thevenin Transformation': lambda c: perform_norton_transformation(c),
     'State Space Analysis': lambda c: perform_state_space_analysis(c),
-    'Loop Analysis': lambda c: perform_loop_analysis(c),
+    # 'Loop Analysis': lambda c: perform_loop_analysis(c),
     'For Beginners': lambda c: perform_beginner_analysis(),
     'Plotting': lambda c: perform_plot_analysis(),
     # Add more analysis types as needed
