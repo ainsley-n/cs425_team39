@@ -1,8 +1,7 @@
-from lcapy import Circuit, LoopAnalysis
-from sympy import sympify, symbols
+from lcapy import LoopAnalysis
 import re
 
-#this was from the lcapy documentation
+# This was from the lcapy documentation
 def perform_lcapy_mesh(circuit):
     la = LoopAnalysis(circuit)
         
@@ -35,12 +34,12 @@ def perform_lcapy_mesh(circuit):
         component_str = '  '.join(str(component) for component in components_dict[loop_index])
         print(f"I_{loop_index}: {component_str}")
 
-    # mesh equations using LaPlace Domain
+    # Mesh equations using LaPlace Domain
     l = circuit.laplace().mesh_analysis()
     laplace_mesh_equations = l.mesh_equations()
 
     print("\nMesh Equations :")
-    # print Laplace domain equations line by line
+    # Print Laplace domain equations line by line
     for variable, equation in laplace_mesh_equations.items():
         expression = equation.lhs
         expression_string = str(expression)
@@ -71,24 +70,24 @@ def parse_netlist(netlist):
             component_type = parts[0]
             # print(f'component_type: {component_type}')
 
-            #extract nodes, exclude the semicolon
+            # Extract nodes, exclude the semicolon
             nodes_str = ' '.join(parts[1:-1]).rstrip(';')
             # print(f'nodes_str: {nodes_str}')
 
-            #split the combined string based on semicolon
+            # Split the combined string based on semicolon
             nodes = tuple(int(node) if node.isdigit() else node for node in nodes_str.split())
             # print(f'nodes: {nodes}')
 
-            #if it's a new component start new tuple
+            # If it's a new component start new tuple
             if current_component is None:
                 current_component = nodes
             else:
-                #if it's the same component update end node
+                # If it's the same component update end node
                 current_component = (current_component[0], nodes[1])
                 
             # print(f'current component: {current_component}')
 
-            #if it's the last line add it to list
+            # If it's the last line add it to list
             if parts[-1][-1] != ';':
                 components.append((component_type, current_component))
                 current_component = None
@@ -99,7 +98,7 @@ def parse_netlist(netlist):
 def organize_components(components):
     node_dict = {}
     for component_type, nodes in components:
-        #'W' doesn't count as a component
+        # 'W' doesn't count as a component
         if component_type != 'W':
             for node in nodes:
                 normalized_node = str(node).split('_')[0] if '_' in str(node) else str(node)
@@ -114,7 +113,7 @@ def sort_by_node(organized_components):
     for node, components in organized_components.items():
         sorted_components_list = []
         for component_type, nodes in components:
-            #handle integer and string nodes
+            # Handle integer and string nodes
             normalized_nodes = [str(node).split('_')[0] if '_' in str(node) else str(node) for node in nodes]
             sorted_components_list.append({component_type: normalized_nodes})
         sorted_components_dict[node] = sorted_components_list
@@ -124,7 +123,7 @@ def sort_by_node(organized_components):
 
 
 def perform_mesh_analysis(circuit):
-    #organize components
+    # Organize components
     components = parse_netlist(circuit)
     organized_components = organize_components(components)
     # print(f'Organized Components {organized_components}\n')

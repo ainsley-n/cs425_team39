@@ -1,4 +1,4 @@
-#import needed files for analysis
+# Import needed files for analysis
 from mesh_analysis import perform_mesh_analysis
 from state_analysis import perform_state_space_analysis
 from plot_analysis import perform_plot_analysis
@@ -59,14 +59,14 @@ def request_node_property(circuit):
     else:
         circuit[nodeIndex].i.pprint()
 
-#dictionary for analysis by ainsley because this looks nicer and makes more sense
+# Dictionary for analysis by ainsley because this looks nicer and makes more sense
 analysis_functions = {
     'Draw circuit': lambda c: c.draw(),
     'Mesh analysis': lambda c: perform_mesh_analysis(c),
   
-    #will finish this
+    # Will finish this
     'Nodal analysis': lambda c: perform_nodal_analysis(c),
-    #to be more complete
+    # To be more complete
     
     'Description': lambda c: c.description(),
     'Thevenin Analysis': lambda c: perform_thevenin_analysis(c),
@@ -92,23 +92,23 @@ def perform_analysis(circuit, analysis_type):
         print("Invalid analysis type. Please choose a valid analysis type.")
 
         
-#nodal analysis equations done by ainsley
+# Nodal analysis equations done by ainsley
 def perform_nodal_analysis(circuit):
-    #time domain
+    # Time domain
     nodal_result = circuit.nodal_analysis()
     nodal_equations = nodal_result.nodal_equations()
 
     print("Nodal Equations (Time Domain):")
-    #print equations line by line
+    # Print equations line by line
     for node, equation in nodal_equations.items():
         print(f"V_{node}: {equation}")
 
-    #Laplace domain
+    # Laplace domain
     laplace_result = circuit.laplace().nodal_analysis()
     laplace_nodal_equations = laplace_result.nodal_equations()
 
     print("\nNodal Equations (Laplace Domain):")
-    #print Laplace domain equations line by line
+    # Print Laplace domain equations line by line
     for node, equation in laplace_nodal_equations.items():
         print(f"V_{node}(s): {equation}")
 
@@ -177,11 +177,11 @@ W 0_2 0_3; right
 W 0_3 0_4; right""")
 
 # Thevenin example circuit, nodes 2 & 0
-circuit = Circuit("""
-...V1 1 0 V; down
-...R1 1 2 R; right
-...C1 2 0_2 C; down
-...W 0 0_2; right""")
+# circuit = Circuit("""
+# ...V1 1 0 V; down
+# ...R1 1 2 R; right
+# ...C1 2 0_2 C; down
+# ...W 0 0_2; right""")
 
 # State-Space example
 '''circuit = Circuit("""
@@ -223,7 +223,7 @@ R1 1 2 2; right=1.5
 R2 2 0_2 4; down
 W 0 0_2; right""")'''
 
-#menu for analysis options
+# Menu for analysis options
 def display_menu():
     print("\n\nAvailable analysis types:")
     analysis_options = {
@@ -248,16 +248,16 @@ def display_menu():
 
     return analysis_options
 
-#ainsley modified the user menu to make more sense in python
+# Modified the user menu to make more sense in python
 while True:
-    #display the menu and get user input
+    # Display the menu and get user input
     analysis_options = display_menu()
     analysis_choice = input("Choose the analysis type (enter the corresponding number, 0 to exit): ")
     if analysis_choice == '0':
         print("Exiting the program. Goodbye!\n")
         break
 
-    #check for user input error
+    # Check for user input error
     if analysis_choice in analysis_options.keys():
         print('\n\n')
         perform_analysis(circuit, analysis_options[analysis_choice])

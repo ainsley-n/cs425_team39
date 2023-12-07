@@ -10,7 +10,7 @@ def perform_beginner_analysis():
     R1 1 2 2; right=1.5
     R2 2 0_2 4; down
     W 0 0_2; right""")
-    print(" * Circuit has been replaced for demonstartion.")
+    print(" * Circuit has been replaced for demonstration.")
     
     # Draw circuit for user
     print("Circuits given as netlists can be analyzed and drawn.")
