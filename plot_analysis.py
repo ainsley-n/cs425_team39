@@ -5,6 +5,7 @@ from numpy import logspace
 def perform_plot_analysis():
     # Each domain has different behavior for plotting
     # Range of time values can be defined as a tuple
+    print("This analysis allows for various plotting analyses given an expression")
 
     print("Available plotting types:")
     print("1. Pole-Zero Plot")
@@ -48,7 +49,7 @@ def perform_plot_analysis():
         # Nyquist plot
         # Plots imaginary and real frequency response
         expr = input("Input your expression using the unit s: ")
-        #expr = 10 * (s + 1) * (s + 2) / ((s - 3) * (s - 4))
+        # expr = 10 * (s + 1) * (s + 2) / ((s - 3) * (s - 4))
         transExpr = transfer(expr)
         transExpr.nyquist_plot((-100, 100))
         
@@ -60,7 +61,7 @@ def perform_plot_analysis():
         
     elif plot_choice == '6':
         expr = input("Input your expression using the unit j: ")
-        #phasor(1 + j).plot()
+        # phasor(1 + j).plot()
         transExpr = transfer(expr)
         phasor(transExpr).plot()
         
