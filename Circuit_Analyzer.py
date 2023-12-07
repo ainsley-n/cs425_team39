@@ -62,12 +62,11 @@ def request_node_property(circuit):
 #dictionary for analysis by ainsley because this looks nicer and makes more sense
 analysis_functions = {
     'Draw circuit': lambda c: c.draw(),
-    
-    #i am going to improve 
     'Mesh analysis': lambda c: perform_mesh_analysis(c),
+  
+    #will finish this
     'Nodal analysis': lambda c: perform_nodal_analysis(c),
-    #these to be more complete 
-    
+    #to be more complete
     
     'Description': lambda c: c.description(),
     'Thevenin Analysis': lambda c: perform_thevenin_analysis(c),
