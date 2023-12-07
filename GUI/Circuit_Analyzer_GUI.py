@@ -19,6 +19,7 @@ class CircuitAnalyzerGUI():
         self.current_frame = "main_menu"
 
         self._add_frame(MainMenu, "main_menu")
+        self.frames["main_menu"].close_btn.config(command=self.root.destroy)
 
 
     def _add_frame(self, Frame, name):
