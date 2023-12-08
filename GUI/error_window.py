@@ -1,5 +1,4 @@
 from tkinter import Label, Button, Toplevel
-from root import Root
 
 # Class to generate an error window on demand
 
@@ -16,7 +15,9 @@ class ErrorWindow():
         
         self.window.resizable(False, False)
 
+        #Found these lines of code online
+        #Pauses main window while error window is active
         self.window.transient(master) #set to be on top of the main window
         self.window.grab_set() #hijack all commands from the master (clicks on the main window are ignored)
-        master.wait_window(self.window) #pause anything on the main window until this one closes (optional)
+        master.wait_window(self.window) #pause anything on the main window until this one closes
     

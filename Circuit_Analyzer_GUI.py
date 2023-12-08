@@ -1,8 +1,10 @@
 # Import Packages
 import tkinter as tk
-from root import Root
-from error_window import ErrorWindow
-from main_menu import MainMenu
+from GUI.root import Root
+from GUI.error_window import ErrorWindow
+from GUI.main_menu import MainMenu
+
+import Circuit_Analyzer
 
 # This is the main class for the GUI
 # Frames for all screens are initialized

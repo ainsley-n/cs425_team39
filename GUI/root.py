@@ -1,5 +1,3 @@
-# From Example Program "How To Organize Multi-frame TKinter Application With MVC Pattern" by Nazmul Ahsan
-
 from tkinter import Tk
 
 class Root(Tk):
