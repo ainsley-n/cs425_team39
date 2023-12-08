@@ -248,18 +248,21 @@ def display_menu():
 
     return analysis_options
 
-# Modified the user menu to make more sense in python
-while True:
-    # Display the menu and get user input
-    analysis_options = display_menu()
-    analysis_choice = input("Choose the analysis type (enter the corresponding number, 0 to exit): ")
-    if analysis_choice == '0':
-        print("Exiting the program. Goodbye!\n")
-        break
+#Modified to prevent running CLI when importing into another python script
+if __name__ == "__main__":
 
-    # Check for user input error
-    if analysis_choice in analysis_options.keys():
-        print('\n\n')
-        perform_analysis(circuit, analysis_options[analysis_choice])
-    else:
-        print("Invalid input. Please enter a valid analysis number.")
+    # Modified the user menu to make more sense in python
+    while True:
+        # Display the menu and get user input
+        analysis_options = display_menu()
+        analysis_choice = input("Choose the analysis type (enter the corresponding number, 0 to exit): ")
+        if analysis_choice == '0':
+            print("Exiting the program. Goodbye!\n")
+            break
+
+        # Check for user input error
+        if analysis_choice in analysis_options.keys():
+            print('\n\n')
+            perform_analysis(circuit, analysis_options[analysis_choice])
+        else:
+            print("Invalid input. Please enter a valid analysis number.")
