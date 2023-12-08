@@ -1,6 +1,7 @@
 # Import Packages
 import tkinter as tk
 from root import Root
+from error_window import ErrorWindow
 from main_menu import MainMenu
 
 # This is the main class for the GUI
@@ -14,12 +15,14 @@ from main_menu import MainMenu
 
 class CircuitAnalyzerGUI():
     def __init__(self):
-        self.root = Root("Circuit Analyzer")
+        self.root = Root("Circuit Analyzer", 400, 250, 500, 300)
         self.frames = {}
         self.current_frame = "main_menu"
 
         self._add_frame(MainMenu, "main_menu")
         self.frames["main_menu"].close_btn.config(command=self.root.destroy)
+        self.frames["main_menu"].generate_btn.config(command=lambda: ErrorWindow("Feature Not Yet Implemented", self.root))
+        self.frames["main_menu"].create_btn.config(command=lambda: ErrorWindow("Feature Not Yet Implemented", self.root))
 
 
     def _add_frame(self, Frame, name):
