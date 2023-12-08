@@ -20,10 +20,8 @@ class CircuitAnalyzerGUI():
         self.current_frame = "main_menu"
 
         self._add_frame(MainMenu, "main_menu")
-        self.frames["main_menu"].close_btn.config(command=self.root.destroy)
-        self.frames["main_menu"].generate_btn.config(command=lambda: ErrorWindow("Feature Not Yet Implemented", self.root))
-        self.frames["main_menu"].create_btn.config(command=lambda: ErrorWindow("Feature Not Yet Implemented", self.root))
-
+        self.main_menu_controller = MainMenuController(self.frames["main_menu"], self.root)
+        
 
     def _add_frame(self, Frame, name):
         self.frames[name] = Frame(self.root)
@@ -37,6 +35,11 @@ class CircuitAnalyzerGUI():
     def start_mainloop(self):
         self.root.mainloop()
 
+class MainMenuController():
+    def __init__(self, frame, root):
+        frame.close_btn.config(command=root.destroy)
+        frame.generate_btn.config(command=lambda: ErrorWindow("Feature Not Yet Implemented", root))
+        frame.create_btn.config(command=lambda: ErrorWindow("Feature Not Yet Implemented", root))
 
 if __name__ == "__main__":
     analyzer = CircuitAnalyzerGUI()
