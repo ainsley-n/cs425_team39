@@ -1,16 +1,21 @@
 from lcapy import LoopAnalysis
+from sympy import solve
 import re
 
 # This was from the lcapy documentation
 def perform_lcapy_mesh(circuit):
     la = LoopAnalysis(circuit)
         
+    # Function to find loops in Circuit
     mesh_currents = la.mesh_currents()
     num_loops = len(mesh_currents)
-    print(f'There are {num_loops} loop within this circuit')
+    print(f'There are {num_loops} loop(s) within this circuit')
     print('\nMesh Currents:')
-    for i in range(num_loops):
-        print(f'I_{i + 1}')
+    num_loops_str = ' '.join(f'I_{i + 1};' for i in range(num_loops))
+    print(f'{num_loops_str}')
+    
+    # for i in range(num_loops):
+    #     print(f'I_{i + 1}')
 
     print('\nLoops: ')
     # Get the list of loops
@@ -56,10 +61,18 @@ def perform_lcapy_mesh(circuit):
     # laplace_matrix_equations = l.matrix_equations(form='A y = b')
     # print(laplace_matrix_equations)
     
-    # laplace_solutions = l.solve_laplace()
-    # print('SOLUTIONSS')
-    # laplace_solutions.pprint()
+    
+    # # Create a list of Laplace domain equations
+    # laplace_equations = [equation.lhs - equation.rhs for equation in laplace_mesh_equations.values()]
 
+    # # Solve Laplace domain equations using SymPy's solve function
+    # laplace_solution = solve(laplace_equations, laplace_vars.values())
+
+    # print('\nLaplace Domain Solutions:')
+    # for node, solution in zip(laplace_vars.keys(), laplace_solution):
+    #     print(f"V{node}(s): {solution}")
+        
+        
 def parse_netlist(netlist):
     components = []
     current_component = None
@@ -127,6 +140,7 @@ def perform_mesh_analysis(circuit):
     components = parse_netlist(circuit)
     organized_components = organize_components(components)
     # print(f'Organized Components {organized_components}\n')
+    
 
     sorted_components = sort_by_node(organized_components)
     #print sorted components

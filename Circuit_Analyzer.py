@@ -1,5 +1,6 @@
 # Import needed files for analysis
 from mesh_analysis import perform_mesh_analysis
+from nodal_analysis import perform_nodal_analysis
 from state_analysis import perform_state_space_analysis
 from plot_analysis import perform_plot_analysis
 from beginner_analysis import perform_beginner_analysis
@@ -63,11 +64,7 @@ def request_node_property(circuit):
 analysis_functions = {
     'Draw circuit': lambda c: c.draw(),
     'Mesh analysis': lambda c: perform_mesh_analysis(c),
-  
-    # Will finish this
     'Nodal analysis': lambda c: perform_nodal_analysis(c),
-    # To be more complete
-    
     'Description': lambda c: c.description(),
     'Thevenin Analysis': lambda c: perform_thevenin_analysis(c),
     'Norton Analysis': lambda c: perform_norton_analysis(c),
@@ -91,28 +88,7 @@ def perform_analysis(circuit, analysis_type):
     else:
         print("Invalid analysis type. Please choose a valid analysis type.")
 
-        
-# Nodal analysis equations done by ainsley
-def perform_nodal_analysis(circuit):
-    # Time domain
-    nodal_result = circuit.nodal_analysis()
-    nodal_equations = nodal_result.nodal_equations()
-
-    print("Nodal Equations (Time Domain):")
-    # Print equations line by line
-    for node, equation in nodal_equations.items():
-        print(f"V_{node}: {equation}")
-
-    # Laplace domain
-    laplace_result = circuit.laplace().nodal_analysis()
-    laplace_nodal_equations = laplace_result.nodal_equations()
-
-    print("\nNodal Equations (Laplace Domain):")
-    # Print Laplace domain equations line by line
-    for node, equation in laplace_nodal_equations.items():
-        print(f"V_{node}(s): {equation}")
-
-
+ 
 # State Space Analysis moved to separate file
 
 # Thevenin Analysis of a linear subcircuit with user defined nodes
@@ -131,9 +107,13 @@ def perform_norton_analysis(circuit):
     # Take input for start and end node
     startNode = input("Input start node as number: ")
     endNode = input("Input end node as number: ")
-    norton = circuit.norton(startNode, endNode)
-    norton.pprint()
-    norton.draw()
+    try:
+        norton = circuit.norton(startNode, endNode)
+        norton.pprint()
+        norton.draw()
+    except ValueError as e:
+        print(f'Error: {e}')
+        print('Make sure ther is a DC path between all nodes, voltage sources are not short-circuited, and there are no loops of voltage sources.')
 
 # Thevenin Transformation to norton equivalent using user defined voltage and resistance
 def perform_thevenin_transformation(circuit):
