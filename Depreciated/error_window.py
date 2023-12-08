@@ -1,3 +1,6 @@
+#DEPRECIATED
+#Replaced with tkinter messagebox module
+
 from tkinter import Label, Button, Toplevel
 
 # Class to generate an error window on demand

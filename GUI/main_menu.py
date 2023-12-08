@@ -17,13 +17,13 @@ class MainMenu(Frame):
         self.header = Label(self, text="Welcome to Circuit Analyzer!", padx=10, pady=10)
         self.header.grid(row=0, column=0, columnspan=3, padx=10, pady=10, sticky="ew")
 
-        self.generate_btn = Button(self, text="Generate Circuit", width=25, height=5)
+        self.generate_btn = Button(self, text="Generate Circuit", width=20, height=5)
         self.generate_btn.grid(row=1, column=0, padx=10, pady=10, sticky="nsew")
 
-        self.load_btn = Button(self, text="Load Circuit", width=25, height=5)
+        self.load_btn = Button(self, text="Load Circuit", width=20, height=5)
         self.load_btn.grid(row=1, column=1, padx=10, pady=10, sticky="nsew")
 
-        self.create_btn = Button(self, text="Create Circuit", width=25, height=5)
+        self.create_btn = Button(self, text="Create Circuit", width=20, height=5)
         self.create_btn.grid(row=1, column=2, padx=10, pady=10, sticky="nsew")
 
         self.close_btn = Button(self, text="Close")
