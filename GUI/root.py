@@ -6,6 +6,7 @@ class Root(Tk):
 
         if start_width != None and start_height != None:
             self.geometry(f"{start_width}x{start_height}")
+        self.geometry("")
         self.minsize(width=min_width, height=min_height)
         self.title(title)
         self.grid_columnconfigure(0, weight=1)
