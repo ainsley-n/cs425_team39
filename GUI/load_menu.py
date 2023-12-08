@@ -1,4 +1,4 @@
-from tkinter import Frame, Label, Button
+from tkinter import Frame, Label, Button, Entry
 
 # This class defines the Main Menu as a Tk Frame 
 
@@ -29,3 +29,9 @@ class LoadMenu(Frame):
         
         self.input_label = Label(self, text="File Path:", padx=10, pady=10)
         self.input_label.grid(row=1, column=0, padx=0, pady=0, sticky="e")
+
+        self.file_entry = Entry(self)
+        self.file_entry.grid(row=1, column=1, sticky="ew")
+
+        self.file_btn = Button(self, text="Choose File...", )
+        self.file_btn.grid(row=1, column=2, padx=10, pady=10, sticky="w")
