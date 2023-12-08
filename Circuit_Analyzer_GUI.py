@@ -5,8 +5,10 @@ from tkinter import filedialog as fd
 from GUI.root import Root
 from GUI.main_menu import MainMenu
 from GUI.load_menu import LoadMenu
+from GUI.circuit_analysis import CircuitAnalysis
 
 from Circuit_Analyzer import create_circuit_from_file
+from lcapy import Circuit
 
 # This is the main class for the GUI
 # Frames for all screens are initialized
@@ -23,13 +25,16 @@ class CircuitAnalyzerGUI():
         self.frames = {}
         self.current_frame = "main_menu"
         self.current_filename = ""
-        self.current_circuit = None
+        self.current_circuit = Circuit()
 
         self._add_frame(MainMenu, "main_menu")
         self.main_menu_controller = MainMenuController(self.frames["main_menu"], self)
 
         self._add_frame(LoadMenu, "load_menu")
         self.load_menu_controller = LoadMenuController(self.frames["load_menu"], self)
+
+        self._add_frame(CircuitAnalysis, "circuit_analysis")
+        self.circuit_analysis_controller = CircuitAnalysisController(self.frames["circuit_analysis"], self)
         
 
     def _add_frame(self, Frame, name):
@@ -75,6 +80,9 @@ class LoadMenuController():
                 title="Error",
                 message="An error occured.\nThis file may not contain a netlist. Please try again."
             )
+        else:
+            controller.circuit_analysis_controller.update_image()
+            controller.switch("circuit_analysis")
 
     def select_file(self):
         filetypes = (
@@ -87,8 +95,17 @@ class LoadMenuController():
             initialdir='/',
             filetypes=filetypes))
         
+class CircuitAnalysisController():
+    def __init__(self, frame, controller):
+        self.frame = frame
+        self.controller = controller
+        frame.back_btn.config(command=lambda : controller.switch("main_menu"))
 
-
+    def update_image(self):
+        self.controller.current_circuit.draw('temp/circuit.png')
+        image = tk.PhotoImage(file='temp/circuit.png')
+        self.frame.image_label.config(image=image)
+        self.frame.image_label.image = image
 def unimplemented():
     mb.showwarning(
                 title="Warning",
