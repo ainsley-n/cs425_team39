@@ -1,4 +1,6 @@
+from lcapy import *
 from lcapy import Circuit
+from lcapy import state; state.current_sign_convention = 'passive'
 
 def game_loop():
     # DC volt divider for beginners
@@ -17,20 +19,22 @@ def game_loop():
         choice = input("Enter your choice: ")
 
         if choice == '1':
+
             # Draw circuit 
             circuit.draw()
+
             # Print Netlist
             print(circuit.netlist())
             component_name = input("Enter the name of the component you want to solve for: ")
             component_property = input("Enter i or v for current or voltage: ")
-            #component_name = component_name.strip()
-            #component_property = component_property.strip()
-            # Assuming you have a function to solve for a specific component
+
+            # Assuming you have a function to solve for a specific component in Time Domain representation
             solution = request_component_property(circuit, component_name, component_property)
+            print("Testing Solution:", solution)
             userAnswer = input("What is the value of the property for the component? ")
-            # Extract the numerical value from the ConstantTimeDomainVoltage object
-            solution_value = solution.dc.magnitude
-            if (solution_value-userAnswer == 0):
+
+            # Check if user answer is correct
+            if (solution==int(userAnswer)):
                 print("Congratulations! You solved it.")
                 print("Solution:", solution)
             else:
@@ -48,14 +52,15 @@ def request_component_property(circuit, componentName, componentProperty):
     print(circuit.netlist())
     # Access component property dynamically
     try:
-        component = circuit[componentName]
-        property_value = getattr(component, componentProperty)
-        property_value.pprint()
-        return property_value
+        if (componentProperty == 'v'):
+            return circuit[componentName].V(t)
+        elif (componentProperty == 'i'):
+            return circuit[componentName].I(t)
     except KeyError:
         print(f"Error: Component '{componentName}' not found.")
     except AttributeError:
         print(f"Error: Property '{componentProperty}' not found for component '{componentName}'.")
+    
 
 if __name__ == '__main__':
     game_loop()
