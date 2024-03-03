@@ -36,6 +36,8 @@ class Node(QtWidgets.QGraphicsEllipseItem):
             # Update the position of the wire while dragging
             line = QtCore.QLineF(self.wire_in_progress.line().p1(), self.mapToScene(event.pos()))
             self.wire_in_progress.setLine(line)
+            
+            
 
     def mouseReleaseEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton and self.wire_in_progress:
@@ -47,6 +49,7 @@ class Node(QtWidgets.QGraphicsEllipseItem):
             if end_item:
                 # Connect the wire to the end node
                 self.wire_in_progress.setLine(QtCore.QLineF(self.wire_in_progress.line().p1(), end_item.scenePos()))
+                self.wire_in_progress.start_node = self
                 self.wire_in_progress.end_node = end_item
                 end_item.wire_in_progress = self.wire_in_progress
             else:
@@ -54,7 +57,11 @@ class Node(QtWidgets.QGraphicsEllipseItem):
                 self.scene().removeItem(self.wire_in_progress)
 
             self.wire_in_progress = None
-
+            
+    def connected_wires(self):
+        # Return a list of wires connected to this node
+        return [wire for wire in self.scene().items() if isinstance(wire, Wire) and (wire.start_node == self or wire.end_node == self)]
+    
     
 
 class Element(QtWidgets.QGraphicsRectItem):
@@ -93,13 +100,39 @@ class Element(QtWidgets.QGraphicsRectItem):
         cloned_element = Element("", self.rect(), self.brush().color().lighter())
         cloned_element.init_nodes()
         return cloned_element
+    
+    def mousePressEvent(self, event):
+        # Store the initial position of the element when the mouse is pressed
+        self.initial_pos = self.pos()
+        super(Element, self).mousePressEvent(event)
 
+    def mouseMoveEvent(self, event):
+        print(f"Element mouseMoveEvent - LeftButton: {event.buttons() == QtCore.Qt.LeftButton}")
+        super(Element, self).mouseMoveEvent(event)
+
+        # Update the position of connected wires
+        for node in self.nodes:
+            for wire in node.connected_wires():
+                if wire.start_node == node:
+                    # Update the start position if the moving element is the start node
+                    print("Updating start position")
+                    line = QtCore.QLineF(node.scenePos(), wire.line().p2())
+                elif wire.end_node == node:
+                    # Update the end position if the moving element is the end node
+                    print("Updating end position")
+                    line = QtCore.QLineF(wire.line().p1(), node.scenePos())
+                else:
+                    continue
+                wire.setLine(line)
+        
+        
 class Wire(QtWidgets.QGraphicsLineItem):
     def __init__(self, start_pos, end_pos, parent=None):
         super(Wire, self).__init__(parent)
         self.setLine(QtCore.QLineF(start_pos, end_pos))
         self.setPen(QtGui.QPen(QtGui.QColor("black"), 2))
         self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
+
 
 
 class Sidebar(QtWidgets.QGraphicsView):
@@ -110,13 +143,21 @@ class Sidebar(QtWidgets.QGraphicsView):
         self.create_sidebar_elements()
 
     def create_sidebar_elements(self):
-        resistor = Element("Resistor", QtCore.QRectF(0, 0, 50, 20), QtGui.QColor("red"))
-        capacitor = Element("Capacitor", QtCore.QRectF(0, 50, 50, 20), QtGui.QColor("yellow"))
+        voltageSource = Element("Voltage Source", QtCore.QRectF(0, 0, 50, 20), QtGui.QColor("red"))
+        resistor = Element("Resistor", QtCore.QRectF(0, 50, 50, 20), QtGui.QColor("blue"))
+        capacitor = Element("Capacitor", QtCore.QRectF(0, 100, 50, 20), QtGui.QColor("yellow"))
 
+        self.scene().addItem(voltageSource)
         self.scene().addItem(resistor)
         self.scene().addItem(capacitor)
+        
+        self.elements = {
+            "Voltage Source": voltageSource,
+            "Resistor": resistor,
+            "Capacitor": capacitor
+        }
 
-        for element in [resistor, capacitor]:
+        for element in self.elements.values():
             element.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
             # Display the name label for the original element
             name_label = QtWidgets.QGraphicsTextItem(element.name, element)
@@ -163,6 +204,8 @@ class Canvas(QtWidgets.QGraphicsView):
             selected_items = self.scene().selectedItems()
             for item in selected_items:
                 if isinstance(item, Element):
+                    self.scene().removeItem(item)
+                elif isinstance(item, Wire):
                     self.scene().removeItem(item)
                 else:
                     super().keyPressEvent(event)
