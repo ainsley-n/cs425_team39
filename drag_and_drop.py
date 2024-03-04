@@ -137,7 +137,13 @@ class Element(QtWidgets.QGraphicsRectItem):
 
      
 class CircularElement(QtWidgets.QGraphicsEllipseItem):
+    deleted_node_labels = set()
+    label_number = 0  
     
+    @classmethod
+    def increment_label_number(cls):
+        cls.label_number += 1
+        
     def __init__(self, name, rect, color, parent=None):
         diameter = min(rect.width(), rect.height())
         super(CircularElement, self).__init__(rect.topLeft().x(), rect.topLeft().y(), diameter, diameter, parent)
@@ -146,7 +152,6 @@ class CircularElement(QtWidgets.QGraphicsEllipseItem):
         self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.name = name
         self.nodes = []
-        self.label_number = -1
         self.init_nodes()
 
         # Create a QGraphicsTextItem to display the name beneath the circle
@@ -173,9 +178,14 @@ class CircularElement(QtWidgets.QGraphicsEllipseItem):
         # Create a new instance with the same properties
         cloned_circular_element = CircularElement("", self.rect(), self.brush().color().lighter())
         cloned_circular_element.init_nodes()
-        # Increment the label number for the next CircularElement clone
-        cloned_circular_element.label_number = self.label_number + 1
-        self.label_number += 1
+        
+        # Check if there are deleted node labels to reuse
+        if self.deleted_node_labels:
+            cloned_circular_element.label_number = self.deleted_node_labels.pop()
+        else:
+            # Increment the label number for the next CircularElement clone
+            cloned_circular_element.label_number = self.label_number
+            CircularElement.increment_label_number()
         
         # Update the name label for the clone
         cloned_circular_element.updateNameLabel()
@@ -211,17 +221,12 @@ class CircularElement(QtWidgets.QGraphicsEllipseItem):
                     continue
                 wire.setLine(line)
                 
-    def deleteNode(self, deleted_node):
-    # Check if the deleted node is in the nodes list
-        if deleted_node in self.nodes:
-            # Remove the deleted node from the nodes list
-            self.nodes.remove(deleted_node)
+    def deleteNode(self):
+        # Add the label number of the deleted node to the set for reuse
+        self.deleted_node_labels.add(self.label_number)
+        print(f'adding {self.label_number} to array')
 
-            # Update the label numbers of the remaining nodes
-            for idx, node in enumerate(self.nodes):
-                node.label_number = idx + 1
-                node.updateNameLabel()
-
+        
 
 class SetValueDialog(QDialog):
     def __init__(self, parent=None):
@@ -328,11 +333,9 @@ class Canvas(QtWidgets.QGraphicsView):
                 elif isinstance(item, Wire):
                     self.scene().removeItem(item)
                 elif isinstance(item, CircularElement):
-                    # Find the correct instance of CircularElement in the scene
-                    circular_element = next((el for el in self.scene().items() if isinstance(el, CircularElement) and el is item), None)
-                    if circular_element:
-                        circular_element.deleteNode(item)
-                        self.scene().removeItem(item)
+                    item.deleteNode()
+                    self.scene().removeItem(item)
+                    self.checkNumNodesOnCanvas()
                 else:
                     super().keyPressEvent(event)
         else:
@@ -351,6 +354,17 @@ class Canvas(QtWidgets.QGraphicsView):
             with open(file_path, 'w') as file:
                 for element in sorted_elements:
                     file.write(f"{element.pos().x()}, {element.pos().y()}\n")
+                    
+    def checkNumNodesOnCanvas(self):
+        num_nodes = sum(1 for item in self.scene().items() if isinstance(item, CircularElement))
+        print(f"Number of CircleNodeElements on the canvas: {num_nodes}")
+        if num_nodes == 0:
+            CircularElement.deleted_node_labels.clear()
+            print('we have no more nodes')
+            
+            # Clear the set of deleted_node_labels
+            CircularElement.label_number = 0
+
 
 
 class MainWindow(QtWidgets.QMainWindow):
