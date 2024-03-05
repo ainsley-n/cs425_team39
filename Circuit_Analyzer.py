@@ -20,25 +20,23 @@ def create_circuit_from_file(file_path):
     return circuit
 
 def request_component_property(circuit):
-    # Testing
-    print("Testing")
-    '''# DC volt divider for beginners
-    circuit = Circuit("""
-    V 1 0 6; down=1.5
-    R1 1 2 2; right=1.5
-    R2 2 0_2 4; down
-    W 0 0_2; right""")
-    print(" * Circuit has been replaced for demonstartion.")
-    # Display voltage accross each component
-    print("Component voltages can be displayed given the component name. This is the voltage at the voltage source. ")
-    circuit.R1.v.pprint()
-    componentName = "R2"
-    componentName = input("Give the name of the component: ")
-    componentName = eval(componentName.strip())
-    print(componentName)
-    property = input("Give the desired property as V or I: ")
-    print(property)
-    circuit.componentName.property.pprint()'''
+    # Draw circuit 
+    circuit.draw()
+
+    # Print Netlist
+    print(circuit.netlist())
+    componentName = input("Enter the name of the component you want to solve for: ")
+    componentProperty = input("Enter i or v for current or voltage: ")
+    # Access component property dynamically
+    try:
+        if (componentProperty == 'v'):
+            return circuit[componentName].V(t)
+        elif (componentProperty == 'i'):
+            return circuit[componentName].I(t)
+    except KeyError:
+        print(f"Error: Component '{componentName}' not found.")
+    except AttributeError:
+        print(f"Error: Property '{componentProperty}' not found for component '{componentName}'.")
 
 def request_node_property(circuit):
     # DC volt divider for beginners
