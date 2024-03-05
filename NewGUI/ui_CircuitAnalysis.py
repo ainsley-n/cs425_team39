@@ -11,7 +11,7 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 
 
-class Ui_MainWindow(object):
+class Ui_AnalysisWindow(object):
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
         MainWindow.resize(781, 621)
@@ -29,22 +29,22 @@ class Ui_MainWindow(object):
         self.verticalLayout.addWidget(self.label)
         self.horizontalLayout = QtWidgets.QHBoxLayout()
         self.horizontalLayout.setObjectName("horizontalLayout")
-        self.pushButton_2 = QtWidgets.QPushButton(self.centralwidget)
+        self.nodalButton = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton_2.sizePolicy().hasHeightForWidth())
-        self.pushButton_2.setSizePolicy(sizePolicy)
-        self.pushButton_2.setObjectName("pushButton_2")
-        self.horizontalLayout.addWidget(self.pushButton_2)
-        self.pushButton = QtWidgets.QPushButton(self.centralwidget)
+        sizePolicy.setHeightForWidth(self.nodalButton.sizePolicy().hasHeightForWidth())
+        self.nodalButton.setSizePolicy(sizePolicy)
+        self.nodalButton.setObjectName("nodalButton")
+        self.horizontalLayout.addWidget(self.nodalButton)
+        self.meshButton = QtWidgets.QPushButton(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Minimum, QtWidgets.QSizePolicy.Fixed)
         sizePolicy.setHorizontalStretch(0)
         sizePolicy.setVerticalStretch(0)
-        sizePolicy.setHeightForWidth(self.pushButton.sizePolicy().hasHeightForWidth())
-        self.pushButton.setSizePolicy(sizePolicy)
-        self.pushButton.setObjectName("pushButton")
-        self.horizontalLayout.addWidget(self.pushButton)
+        sizePolicy.setHeightForWidth(self.meshButton.sizePolicy().hasHeightForWidth())
+        self.meshButton.setSizePolicy(sizePolicy)
+        self.meshButton.setObjectName("meshButton")
+        self.horizontalLayout.addWidget(self.meshButton)
         self.verticalLayout.addLayout(self.horizontalLayout)
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
@@ -84,8 +84,8 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
         self.label.setText(_translate("MainWindow", "TextLabel"))
-        self.pushButton_2.setText(_translate("MainWindow", "Nodal Analysis"))
-        self.pushButton.setText(_translate("MainWindow", "Mesh Analysis"))
+        self.nodalButton.setText(_translate("MainWindow", "Nodal Analysis"))
+        self.meshButton.setText(_translate("MainWindow", "Mesh Analysis"))
         self.menuFile.setTitle(_translate("MainWindow", "File"))
         self.menuAnalysis.setTitle(_translate("MainWindow", "Analysis"))
         self.actionNew.setText(_translate("MainWindow", "New"))
