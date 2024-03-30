@@ -144,17 +144,17 @@ def perform_norton_transformation(circuit):
 # circuit = create_circuit_from_file(file_path)
 
 # Main example circuit: Mesh, Nodal, Loop, Thevenin, Norton
-circuit = Circuit("""
-V1 1 0; down
-R1 1 2; right
-L1 2 3; right
-R2 3 4; right
-L2 2 0_2; down
-C2 3 0_3; down
-R3 4 0_4; down
-W 0 0_2; right
-W 0_2 0_3; right
-W 0_3 0_4; right""")
+# circuit = Circuit("""
+# V1 1 0; down
+# R1 1 2; right
+# L1 2 3; right
+# R2 3 4; right
+# L2 2 0_2; down
+# C2 3 0_3; down
+# R3 4 0_4; down
+# W 0 0_2; right
+# W 0_2 0_3; right
+# W 0_3 0_4; right""")
 
 # Thevenin example circuit, nodes 2 & 0
 # circuit = Circuit("""
@@ -164,7 +164,7 @@ W 0_3 0_4; right""")
 # ...W 0 0_2; right""")
 
 # State-Space example
-'''circuit = Circuit("""
+circuit = Circuit("""
 V 1 0 {v(t)}; down
 R1 1 2; right
 L 2 3; right=1.5, i={i_L}
@@ -172,7 +172,7 @@ R2 3 0_3; down=1.5, i={i_{R2}}, v={v_{R2}}
 W 0 0_3; right
 W 3 3_a; right
 C 3_a 0_4; down, i={i_C}, v={v_C}
-W 0_3 0_4; right""")'''
+W 0_3 0_4; right""")
 
 # Display use-cases example
 '''circuit = Circuit("""
@@ -187,21 +187,21 @@ R_b 1 0""")'''
 # circuit[1].V.pprint()
 
 # Loop analysis example 
-'''circuit = Circuit("""
-V1 1 0 {u(t)}; down
-R1 1 2; right=2
-L1 2 3; down=2
-W1 0 3; right
-W 1 5; up
-W 2 6; up
-C1 5 6; right=2""")'''
+# circuit = Circuit("""
+# V1 1 0 {u(t)}; down
+# R1 1 2; right=2
+# L1 2 3; down=2
+# W1 0 3; right
+# W 1 5; up
+# W 2 6; up
+# C1 5 6; right=2""")
 
 # DC volt divider for beginners
-'''circuit = Circuit("""
-V 1 0 6; down=1.5
-R1 1 2 2; right=1.5
-R2 2 0_2 4; down
-W 0 0_2; right""")'''
+# circuit = Circuit("""
+# V 1 0 6; down=1.5
+# R1 1 2 2; right=1.5
+# R2 2 0_2 4; down
+# W 0 0_2; right""")
 
 # Menu for analysis options
 def display_menu():
