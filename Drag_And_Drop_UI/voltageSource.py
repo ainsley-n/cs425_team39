@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGraphicsPixmapItem
-from node import Node
-from elements import Element
+from Drag_And_Drop_UI.node import Node
+from Drag_And_Drop_UI.elements import Element
 
 class VoltageSource(Element):
     deleted_voltage_source_labels = set()

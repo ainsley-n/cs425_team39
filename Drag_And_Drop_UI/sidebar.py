@@ -1,10 +1,10 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QVBoxLayout, QPushButton
-from elements import Element, CircularElement
-from voltageSource import VoltageSource
-from resistorSource import Resistor
-from capacitorSource import Capacitor
-from inductorSource import Inductor
+from Drag_And_Drop_UI.elements import Element, CircularElement
+from Drag_And_Drop_UI.voltageSource import VoltageSource
+from Drag_And_Drop_UI.resistorSource import Resistor
+from Drag_And_Drop_UI.capacitorSource import Capacitor
+from Drag_And_Drop_UI.inductorSource import Inductor
 
 class Sidebar(QtWidgets.QGraphicsView):
     def __init__(self, canvas, parent=None):
@@ -14,10 +14,10 @@ class Sidebar(QtWidgets.QGraphicsView):
         self.create_sidebar_elements()  
 
     def create_sidebar_elements(self):
-        voltageSource = VoltageSource("Voltage Source", "Images/voltage_source.png")
-        resistor = Resistor("Resistor", "Images/resistor_image.png")
-        capacitor = Capacitor("Capacitor", "Images/capacitor_image.png")
-        inductor = Inductor("Inductor", "Images/inductor_image.png")
+        voltageSource = VoltageSource("Voltage Source", "Drag_And_Drop_UI/Images/voltage_source.png")
+        resistor = Resistor("Resistor", "Drag_And_Drop_UI/Images/resistor_image.png")
+        capacitor = Capacitor("Capacitor", "Drag_And_Drop_UI/Images/capacitor_image.png")
+        inductor = Inductor("Inductor", "Drag_And_Drop_UI/Images/inductor_image.png")
         node = CircularElement("Node", QtCore.QRectF(0, 250, 50, 20), QtGui.QColor("blue"))
         
         voltageSource.setPos(0, 0)

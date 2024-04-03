@@ -1,6 +1,6 @@
 import unittest
 from PyQt5.QtWidgets import QApplication
-from drag_and_drop import MainWindow, Canvas, Sidebar
+from Drag_And_Drop_UI.drag_and_drop import MainWindow, Canvas, Sidebar
 
 class TestMainWindow(unittest.TestCase):
     def setUp(self):

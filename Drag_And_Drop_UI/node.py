@@ -1,6 +1,6 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QVBoxLayout, QPushButton
-from wire import Wire
+from Drag_And_Drop_UI.wire import Wire
 
 class Node(QtWidgets.QGraphicsEllipseItem):
     def __init__(self, parent, position):
