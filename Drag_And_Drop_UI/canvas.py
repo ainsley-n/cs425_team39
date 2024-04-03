@@ -1,11 +1,11 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QVBoxLayout, QPushButton
-from elements import Element, CircularElement
-from voltageSource import VoltageSource
-from resistorSource import Resistor
-from capacitorSource import Capacitor
-from inductorSource import Inductor
-from wire import Wire
+from Drag_And_Drop_UI.elements import Element, CircularElement
+from Drag_And_Drop_UI.voltageSource import VoltageSource
+from Drag_And_Drop_UI.resistorSource import Resistor
+from Drag_And_Drop_UI.capacitorSource import Capacitor
+from Drag_And_Drop_UI.inductorSource import Inductor
+from Drag_And_Drop_UI.wire import Wire
 
 class Canvas(QtWidgets.QGraphicsView):
     def __init__(self, parent=None):

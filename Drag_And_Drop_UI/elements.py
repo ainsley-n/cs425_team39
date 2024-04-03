@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QVBoxLayout, QPushButton, QGraphicsPixmapItem
-from node import Node
-from setValueDialog import SetValueDialog
+from Drag_And_Drop_UI.node import Node
+from Drag_And_Drop_UI.setValueDialog import SetValueDialog
 # from voltageSource import VoltageSource
 
 class Element(QtWidgets.QGraphicsPixmapItem):

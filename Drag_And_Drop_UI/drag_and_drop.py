@@ -1,7 +1,7 @@
 from PyQt5 import QtWidgets, QtGui, QtCore
 from PyQt5.QtWidgets import QDialog, QLabel, QLineEdit, QVBoxLayout, QPushButton
-from canvas import Canvas
-from sidebar import Sidebar
+from Drag_And_Drop_UI.canvas import Canvas
+from Drag_And_Drop_UI.sidebar import Sidebar
 
 class MainWindow(QtWidgets.QMainWindow):
     def __init__(self, canvas, parent=None):
