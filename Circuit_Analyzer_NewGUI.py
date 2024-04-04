@@ -29,6 +29,7 @@ class AnalysisWindow(QtWidgets.QMainWindow):
         self.ui.setupUi(self)
         self.ui.actionNew.triggered.connect(controller.OpenEditor)
         self.ui.actionOpen.triggered.connect(controller.OpenFile)
+        self.ui.actionSave.triggered.connect(controller.SaveFile)
         
 
 class Controller():
@@ -67,6 +68,14 @@ class Controller():
                 self.analysisWindow.ui.CircuitImage.setPixmap(QtGui.QPixmap('temp/circuit.png'))
                 self.analysisWindow.show()
                 self.mainMenu.hide()
+    def SaveFile(self):
+        new_file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', '', 'Text Files (*.txt);;All Files (*)')[0]
+        if new_file_path:
+            self.file_path = new_file_path
+            with open(self.file_path, 'w') as file:
+                file.write(self.circuit.netlist())
+    
+
 
 
 
