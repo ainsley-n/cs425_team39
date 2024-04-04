@@ -1,6 +1,7 @@
 from lcapy import LoopAnalysis
 from sympy import solve
 import re
+from lcapy.system import tmpfilename, LatexRunner, PDFConverter
 
 # This was from the lcapy documentation
 def perform_lcapy_mesh(circuit):
@@ -153,3 +154,33 @@ def perform_mesh_analysis(circuit):
     #     print()
         
     perform_lcapy_mesh(circuit)
+    expr = circuit.laplace().mesh_analysis().mesh_equations()
+    s = '\\begin{tabular}{ll}\n'
+
+    for k, v in expr.items():
+        if not isinstance(k, str):
+            k = k.latex()
+
+        s += '$' + k + '$: & $' + v.latex() + '$\\\\ \n'
+
+    s += '\\end{tabular}\n'
+
+    tex_filename = tmpfilename('.tex')
+
+    # Need amsmath for operatorname
+    template = ('\\documentclass[a4paper]{standalone}\n'
+                '\\usepackage{amsmath}\n'
+                '\\begin{document}\n$%s$\n'
+                '\\end{document}\n')
+    content = template % s
+
+    open(tex_filename, 'w').write(content)
+    pdf_filename = tex_filename.replace('.tex', '.pdf')
+    latexrunner = LatexRunner()
+    latexrunner.run(tex_filename)
+
+    png_filename = "temp/mesh_analysis.png"
+    pdfconverter = PDFConverter()
+    pdfconverter.to_png(pdf_filename, png_filename, dpi=300)
+
+    return png_filename
