@@ -3,7 +3,8 @@ import os
 from PyQt5 import QtWidgets, QtGui
 
 from NewGUI.ui_MainMenu import Ui_MainWindow
-from NewGUI.ui_CircuitAnalysis import Ui_AnalysisWindow
+#from NewGUI.ui_CircuitAnalysis import Ui_AnalysisWindow
+from NewGUI.ui_AnalysisOptions import Ui_AnalysisWindow
 from Drag_And_Drop_UI import drag_and_drop
 
 from Circuit_Analyzer import create_circuit_from_file
@@ -63,7 +64,7 @@ class Controller():
                 msg.exec_()
             else:
                 self.circuit.draw('temp/circuit.png')
-                self.analysisWindow.ui.label.setPixmap(QtGui.QPixmap('temp/circuit.png'))
+                self.analysisWindow.ui.CircuitImage.setPixmap(QtGui.QPixmap('temp/circuit.png'))
                 self.analysisWindow.show()
                 self.mainMenu.hide()
 
