@@ -82,7 +82,7 @@ def perform_analysis(circuit, analysis_type):
     analysis_function = analysis_functions.get(analysis_type)
     
     if analysis_function:
-        analysis_function(circuit)
+        return analysis_function(circuit)
     else:
         print("Invalid analysis type. Please choose a valid analysis type.")
 
