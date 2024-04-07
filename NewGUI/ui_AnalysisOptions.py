@@ -158,7 +158,7 @@ class Ui_AnalysisWindow(object):
         self.menubar.addAction(self.menuAnalysis.menuAction())
 
         self.retranslateUi(AnalysisWindow)
-        self.stackedWidget.setCurrentIndex(1)
+        self.stackedWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(AnalysisWindow)
 
     def retranslateUi(self, AnalysisWindow):

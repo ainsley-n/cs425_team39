@@ -8,6 +8,7 @@ from NewGUI.ui_AnalysisOptions import Ui_AnalysisWindow
 from Drag_And_Drop_UI import drag_and_drop
 
 from Circuit_Analyzer import create_circuit_from_file
+from Circuit_Analyzer import perform_analysis
 from lcapy import Circuit
 
 dirname = os.path.dirname(__file__)
@@ -30,6 +31,10 @@ class AnalysisWindow(QtWidgets.QMainWindow):
         self.ui.actionNew.triggered.connect(controller.OpenEditor)
         self.ui.actionOpen.triggered.connect(controller.OpenFile)
         self.ui.actionSave.triggered.connect(controller.SaveFile)
+        self.ui.actionMesh.triggered.connect(lambda: controller.PerformAnalysis('Mesh analysis'))
+        self.ui.MeshAnalysis.clicked.connect(lambda: controller.PerformAnalysis('Mesh analysis'))
+        self.ui.actionNodal.triggered.connect(lambda: controller.PerformAnalysis('Nodal analysis'))
+        self.ui.NodeAnalysis.clicked.connect(lambda: controller.PerformAnalysis('Nodal analysis'))
         
 
 class Controller():
@@ -67,6 +72,7 @@ class Controller():
                 self.circuit = new_circuit
                 self.circuit.draw('temp/circuit.png')
                 self.analysisWindow.ui.CircuitImage.setPixmap(QtGui.QPixmap('temp/circuit.png'))
+                self.analysisWindow.ui.stackedWidget.setCurrentIndex(0)
                 self.analysisWindow.show()
                 self.mainMenu.hide()
     def SaveFile(self):
@@ -75,6 +81,28 @@ class Controller():
             self.file_path = new_file_path
             with open(self.file_path, 'w') as file:
                 file.write(self.circuit.netlist())
+    def PerformAnalysis(self, analysis_type):
+        if self.circuit:
+            try:
+                result_file = perform_analysis(self.circuit, analysis_type)
+            except ValueError as e:
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Critical)
+                msg.setText("Error")
+                msg.setInformativeText(str(e))
+                msg.setWindowTitle("Error")
+                msg.exec_()
+            else:
+                self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(result_file))
+                self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
+        else:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setInformativeText('No circuit loaded.\nPlease load a circuit.')
+            msg.setWindowTitle("Error")
+            msg.exec_()
+        
     
 
 
