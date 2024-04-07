@@ -152,8 +152,12 @@ def perform_mesh_analysis(circuit):
     #         for component_type, nodes in component_dict.items():
     #             print(f"  {component_type} {', '.join(map(str, nodes))}")
     #     print()
-        
+
+    #perform_lcapy_mesh(circuit): Terminal output, kept for reference    
     perform_lcapy_mesh(circuit)
+
+
+    # Generate LaTeX and PNG image of mesh equations
     expr = circuit.laplace().mesh_analysis().mesh_equations()
     s = '\\begin{tabular}{ll}\n'
 

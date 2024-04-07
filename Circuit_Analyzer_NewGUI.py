@@ -46,9 +46,8 @@ class Controller():
     def OpenFile(self):
         new_file_path = QtWidgets.QFileDialog.getOpenFileName(None, 'Open File', '', 'All Files (*)')[0]
         if new_file_path != '':
-            self.file_path = new_file_path
             try:
-                self.circuit = create_circuit_from_file(self.file_path)
+                new_circuit = create_circuit_from_file(new_file_path)
             except FileNotFoundError:
                 msg = QtWidgets.QMessageBox()
                 msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -64,6 +63,8 @@ class Controller():
                 msg.setWindowTitle("Error")
                 msg.exec_()
             else:
+                self.file_path = new_file_path
+                self.circuit = new_circuit
                 self.circuit.draw('temp/circuit.png')
                 self.analysisWindow.ui.CircuitImage.setPixmap(QtGui.QPixmap('temp/circuit.png'))
                 self.analysisWindow.show()

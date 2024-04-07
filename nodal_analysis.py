@@ -29,7 +29,7 @@ def nodal_components(circuit):
 # Nodal analysis equations done by ainsley
 def perform_nodal_analysis(circuit):
 
-    
+    #Terminal Output, kept for reference
     nodal_components(circuit)
     print(' ')
     
@@ -51,6 +51,9 @@ def perform_nodal_analysis(circuit):
         print(f"V_{node}: {expression_string_wo_s}")
         
     # solve_nodal(circuit)
+
+
+    # LaTeX and PNG Output
     expr = circuit.laplace().nodal_analysis().nodal_equations()
     s = '\\begin{tabular}{ll}\n'
 
