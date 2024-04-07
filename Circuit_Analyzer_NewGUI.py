@@ -2,9 +2,8 @@ import sys
 import os
 from PyQt5 import QtWidgets, QtGui
 
-from NewGUI.ui_MainMenu import Ui_MainWindow
-#from NewGUI.ui_CircuitAnalysis import Ui_AnalysisWindow
-from NewGUI.ui_AnalysisOptions import Ui_AnalysisWindow
+from GUI.ui_MainMenu import Ui_MainWindow
+from GUI.ui_AnalysisOptions import Ui_AnalysisWindow
 from Drag_And_Drop_UI import drag_and_drop
 
 from Circuit_Analyzer import create_circuit_from_file
