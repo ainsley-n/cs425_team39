@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>781</width>
-    <height>620</height>
+    <width>815</width>
+    <height>625</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -167,6 +167,25 @@
              </property>
             </widget>
            </item>
+           <item>
+            <widget class="QPushButton" name="backButton">
+             <property name="sizePolicy">
+              <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+               <horstretch>0</horstretch>
+               <verstretch>0</verstretch>
+              </sizepolicy>
+             </property>
+             <property name="minimumSize">
+              <size>
+               <width>0</width>
+               <height>0</height>
+              </size>
+             </property>
+             <property name="text">
+              <string>Back</string>
+             </property>
+            </widget>
+           </item>
           </layout>
          </widget>
         </item>
@@ -181,7 +200,7 @@
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>781</width>
+     <width>815</width>
      <height>26</height>
     </rect>
    </property>

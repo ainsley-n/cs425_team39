@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'NewGUI/AnalysisOptions.ui'
+# Form implementation generated from reading ui file 'GUI/AnalysisOptions.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -14,7 +14,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 class Ui_AnalysisWindow(object):
     def setupUi(self, AnalysisWindow):
         AnalysisWindow.setObjectName("AnalysisWindow")
-        AnalysisWindow.resize(781, 620)
+        AnalysisWindow.resize(815, 625)
         self.centralwidget = QtWidgets.QWidget(AnalysisWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
@@ -123,12 +123,21 @@ class Ui_AnalysisWindow(object):
         self.SolutionImage.setAlignment(QtCore.Qt.AlignCenter)
         self.SolutionImage.setObjectName("SolutionImage")
         self.verticalLayout_3.addWidget(self.SolutionImage)
+        self.backButton = QtWidgets.QPushButton(self.widget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.backButton.sizePolicy().hasHeightForWidth())
+        self.backButton.setSizePolicy(sizePolicy)
+        self.backButton.setMinimumSize(QtCore.QSize(0, 0))
+        self.backButton.setObjectName("backButton")
+        self.verticalLayout_3.addWidget(self.backButton)
         self.verticalLayout_4.addWidget(self.widget)
         self.stackedWidget.addWidget(self.SolutionPage)
         self.verticalLayout.addWidget(self.stackedWidget)
         AnalysisWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(AnalysisWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 781, 26))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 815, 26))
         self.menubar.setObjectName("menubar")
         self.menuFile = QtWidgets.QMenu(self.menubar)
         self.menuFile.setObjectName("menuFile")
@@ -172,6 +181,7 @@ class Ui_AnalysisWindow(object):
         self.StateSpaceAnalysis.setText(_translate("AnalysisWindow", "State-Space Analysis"))
         self.NortonAnalysis.setText(_translate("AnalysisWindow", "Norton Analysis"))
         self.SolutionImage.setText(_translate("AnalysisWindow", "SolutionImage"))
+        self.backButton.setText(_translate("AnalysisWindow", "Back"))
         self.menuFile.setTitle(_translate("AnalysisWindow", "File"))
         self.menuAnalysis.setTitle(_translate("AnalysisWindow", "Analysis"))
         self.actionNew.setText(_translate("AnalysisWindow", "New"))

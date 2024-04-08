@@ -34,6 +34,7 @@ class AnalysisWindow(QtWidgets.QMainWindow):
         self.ui.MeshAnalysis.clicked.connect(lambda: controller.PerformAnalysis('Mesh analysis'))
         self.ui.actionNodal.triggered.connect(lambda: controller.PerformAnalysis('Nodal analysis'))
         self.ui.NodeAnalysis.clicked.connect(lambda: controller.PerformAnalysis('Nodal analysis'))
+        self.ui.backButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0))
         
 
 class Controller():
