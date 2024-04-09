@@ -1,5 +1,6 @@
 from lcapy import NodalAnalysis
 import re
+from lcapy.system import tmpfilename, LatexRunner, PDFConverter
 
 def nodal_components(circuit):
     # Perform circuit graph function to collect node stuff
@@ -28,7 +29,7 @@ def nodal_components(circuit):
 # Nodal analysis equations done by ainsley
 def perform_nodal_analysis(circuit):
 
-    
+    #Terminal Output, kept for reference
     nodal_components(circuit)
     print(' ')
     
@@ -50,5 +51,38 @@ def perform_nodal_analysis(circuit):
         print(f"V_{node}: {expression_string_wo_s}")
         
     # solve_nodal(circuit)
+
+
+    # LaTeX and PNG Output
+    expr = circuit.laplace().nodal_analysis().nodal_equations()
+    s = '\\begin{tabular}{ll}\n'
+
+    for k, v in expr.items():
+        if not isinstance(k, str):
+            k = k.latex()
+
+        s += '$' + k + '$: & $' + v.latex() + '$\\\\ \n'
+
+    s += '\\end{tabular}\n'
+
+    tex_filename = tmpfilename('.tex')
+
+    # Need amsmath for operatorname
+    template = ('\\documentclass[a4paper]{standalone}\n'
+                '\\usepackage{amsmath}\n'
+                '\\begin{document}\n$%s$\n'
+                '\\end{document}\n')
+    content = template % s
+
+    open(tex_filename, 'w').write(content)
+    pdf_filename = tex_filename.replace('.tex', '.pdf')
+    latexrunner = LatexRunner()
+    latexrunner.run(tex_filename)
+
+    png_filename = "temp/nodal_analysis.png"
+    pdfconverter = PDFConverter()
+    pdfconverter.to_png(pdf_filename, png_filename, dpi=300)
+
+    return png_filename
 
 

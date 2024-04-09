@@ -82,7 +82,7 @@ def perform_analysis(circuit, analysis_type):
     analysis_function = analysis_functions.get(analysis_type)
     
     if analysis_function:
-        analysis_function(circuit)
+        return analysis_function(circuit)
     else:
         print("Invalid analysis type. Please choose a valid analysis type.")
 
@@ -96,7 +96,7 @@ def perform_thevenin_analysis(circuit):
     startNode = input("Input start node as number: ")
     endNode = input("Input end node as number: ")
     thevenin = circuit.thevenin(startNode, endNode)
-    thevenin.pprint()
+    #thevenin.pprint()
     thevenin.draw()
 
 # Norton Analysis of a linear subcircuit with user defined nodes
@@ -107,7 +107,7 @@ def perform_norton_analysis(circuit):
     endNode = input("Input end node as number: ")
     try:
         norton = circuit.norton(startNode, endNode)
-        norton.pprint()
+        #norton.pprint()
         norton.draw()
     except ValueError as e:
         print(f'Error: {e}')
@@ -142,17 +142,17 @@ def perform_norton_transformation(circuit):
 # circuit = create_circuit_from_file(file_path)
 
 # Main example circuit: Mesh, Nodal, Loop, Thevenin, Norton
-# circuit = Circuit("""
-# V1 1 0; down
-# R1 1 2; right
-# L1 2 3; right
-# R2 3 4; right
-# L2 2 0_2; down
-# C2 3 0_3; down
-# R3 4 0_4; down
-# W 0 0_2; right
-# W 0_2 0_3; right
-# W 0_3 0_4; right""")
+circuit = Circuit("""
+V1 1 0; down
+R1 1 2; right
+L1 2 3; right
+R2 3 4; right
+L2 2 0_2; down
+C2 3 0_3; down
+R3 4 0_4; down
+W 0 0_2; right
+W 0_2 0_3; right
+W 0_3 0_4; right""")
 
 # Thevenin example circuit, nodes 2 & 0
 # circuit = Circuit("""
@@ -162,15 +162,15 @@ def perform_norton_transformation(circuit):
 # ...W 0 0_2; right""")
 
 # State-Space example
-circuit = Circuit("""
-V 1 0 {v(t)}; down
-R1 1 2; right
-L 2 3; right=1.5, i={i_L}
-R2 3 0_3; down=1.5, i={i_{R2}}, v={v_{R2}}
-W 0 0_3; right
-W 3 3_a; right
-C 3_a 0_4; down, i={i_C}, v={v_C}
-W 0_3 0_4; right""")
+# circuit = Circuit("""
+# V 1 0 {v(t)}; down
+# R1 1 2; right
+# L 2 3; right=1.5, i={i_L}
+# R2 3 0_3; down=1.5, i={i_{R2}}, v={v_{R2}}
+# W 0 0_3; right
+# W 3 3_a; right
+# C 3_a 0_4; down, i={i_C}, v={v_C}
+# W 0_3 0_4; right""")
 
 # Display use-cases example
 '''circuit = Circuit("""
