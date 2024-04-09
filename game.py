@@ -1,5 +1,6 @@
 from lcapy import *
 from lcapy import Circuit
+from lcapy.system import tmpfilename, LatexRunner, PDFConverter
 from lcapy import state; state.current_sign_convention = 'passive'
 
 def game_loop():
@@ -11,7 +12,7 @@ def game_loop():
     W 0 0_2; right""")
 
     while True:
-        print("\n\nWelcome to the Circuit Solver Game!")
+        #print("\n\nWelcome to the Circuit Solver Game!")
         print("Choose an option:")
         print("1. Solve Circuit")
         print("2. Exit")
@@ -30,15 +31,18 @@ def game_loop():
 
             # Assuming you have a function to solve for a specific component in Time Domain representation
             solution = request_component_property(circuit, component_name, component_property)
-            print("Testing Solution:", solution)
-            userAnswer = input("What is the value of the property for the component? ")
+            print("Testing Solution:", solution, "Pprint Solu:")
+            solution.pprint()
+            #solution.latex()
+            latexPrint(solution)
+            #userAnswer = input("What is the value of the property for the component? ")
 
             # Check if user answer is correct
-            if (solution==int(userAnswer)):
-                print("Congratulations! You solved it.")
-                print("Solution:", solution)
-            else:
-                print("Sorry, that's not correct. Try again!")
+            #if (solution==int(userAnswer)):
+                #print("Congratulations! You solved it.")
+            print("Solution:", solution)
+            #else:
+                #print("Sorry, that's not correct. Try again!")
         elif choice == '2':
             print("Exiting the game. Goodbye!")
             break
@@ -46,10 +50,8 @@ def game_loop():
             print("Invalid choice. Please enter 1 or 2.")
 
 def request_component_property(circuit, componentName, componentProperty):
-    # Testing
-    print("Testing")
     # Print the netlist
-    print(circuit.netlist())
+    # print(circuit.netlist())
     # Access component property dynamically
     try:
         if (componentProperty == 'v'):
@@ -61,6 +63,36 @@ def request_component_property(circuit, componentName, componentProperty):
     except AttributeError:
         print(f"Error: Property '{componentProperty}' not found for component '{componentName}'.")
     
+
+def latexPrint(solu):
+    # Generate LaTeX and PNG image of mesh equations
+    s = '\\begin\n'
+
+    k = solu.latex()
+
+    s += '$' + k + '$\\\\ \n'
+
+    s += '\\end\n'
+
+    tex_filename = tmpfilename('.tex')
+
+    # Need amsmath for operatorname
+    template = ('\\documentclass[a4paper]{standalone}\n'
+                '\\usepackage{amsmath}\n'
+                '\\begin{document}\n$%s$\n'
+                '\\end{document}\n')
+    content = template % s
+
+    open(tex_filename, 'w').write(content)
+    pdf_filename = tex_filename.replace('.tex', '.pdf')
+    latexrunner = LatexRunner()
+    latexrunner.run(tex_filename)
+
+    png_filename = "temp/request.png"
+    pdfconverter = PDFConverter()
+    pdfconverter.to_png(pdf_filename, png_filename, dpi=300)
+
+    return png_filename
 
 if __name__ == '__main__':
     game_loop()
