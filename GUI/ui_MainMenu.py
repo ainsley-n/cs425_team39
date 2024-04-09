@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'NewGUI\MainMenu.ui'
+# Form implementation generated from reading ui file 'NewGUI/MainMenu.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -104,3 +104,13 @@ class Ui_MainWindow(object):
         self.actionSave.setShortcut(_translate("MainWindow", "Ctrl+S"))
         self.actionNodal.setText(_translate("MainWindow", "Nodal"))
         self.actionMesh.setText(_translate("MainWindow", "Mesh"))
+
+
+if __name__ == "__main__":
+    import sys
+    app = QtWidgets.QApplication(sys.argv)
+    MainWindow = QtWidgets.QMainWindow()
+    ui = Ui_MainWindow()
+    ui.setupUi(MainWindow)
+    MainWindow.show()
+    sys.exit(app.exec_())
