@@ -3,6 +3,11 @@ from lcapy import Circuit
 from lcapy.system import tmpfilename, LatexRunner, PDFConverter
 from lcapy import state; state.current_sign_convention = 'passive'
 
+units = {
+    'v': 'V',
+    'i': 'A',
+}
+
 def game_loop():
     # DC volt divider for beginners
     circuit = Circuit("""
@@ -31,10 +36,11 @@ def game_loop():
 
             # Assuming you have a function to solve for a specific component in Time Domain representation
             solution = request_component_property(circuit, component_name, component_property)
+            unit = units[component_property]
             print("Testing Solution:", solution, "Pprint Solu:")
             solution.pprint()
             #solution.latex()
-            latexPrint(solution)
+            latexPrint(solution, unit)
             #userAnswer = input("What is the value of the property for the component? ")
 
             # Check if user answer is correct
@@ -64,15 +70,9 @@ def request_component_property(circuit, componentName, componentProperty):
         print(f"Error: Property '{componentProperty}' not found for component '{componentName}'.")
     
 
-def latexPrint(solu):
+def latexPrint(solu, unit):
     # Generate LaTeX and PNG image of mesh equations
-    s = '\\begin\n'
-
-    k = solu.latex()
-
-    s += '$' + k + '$\\\\ \n'
-
-    s += '\\end\n'
+    s = solu.latex() + '\\:' + unit
 
     tex_filename = tmpfilename('.tex')
 
