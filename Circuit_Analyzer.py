@@ -1,9 +1,9 @@
 # Import needed files for analysis
-from mesh_analysis import perform_mesh_analysis
-from nodal_analysis import perform_nodal_analysis
-from state_analysis import perform_state_space_analysis
-from plot_analysis import perform_plot_analysis
-from beginner_analysis import perform_beginner_analysis
+from Analysis_Methods.mesh_analysis import perform_mesh_analysis
+from Analysis_Methods.nodal_analysis import perform_nodal_analysis
+from Analysis_Methods.state_analysis import perform_state_space_analysis
+from Analysis_Methods.plot_analysis import perform_plot_analysis
+from Analysis_Methods.beginner_analysis import perform_beginner_analysis
 
 # Lcapy Implementation
 from lcapy import *
