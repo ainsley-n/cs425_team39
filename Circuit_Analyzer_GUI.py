@@ -1,6 +1,7 @@
 import sys
 import os
 from PyQt5 import QtWidgets, QtGui
+from tempfile import NamedTemporaryFile
 
 from GUI.ui_MainMenu import Ui_MainWindow
 from GUI.ui_AnalysisOptions import Ui_AnalysisWindow
@@ -70,8 +71,11 @@ class Controller():
             else:
                 self.file_path = new_file_path
                 self.circuit = new_circuit
-                self.circuit.draw('temp/circuit.png')
-                self.analysisWindow.ui.CircuitImage.setPixmap(QtGui.QPixmap('temp/circuit.png'))
+
+                temp_file = NamedTemporaryFile(suffix='.png', delete=False).name
+                self.circuit.draw(temp_file)
+                self.analysisWindow.ui.CircuitImage.setPixmap(QtGui.QPixmap(temp_file))
+                os.remove(temp_file)
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(0)
                 self.analysisWindow.show()
                 self.mainMenu.hide()
@@ -83,9 +87,10 @@ class Controller():
                 file.write(self.circuit.netlist())
     def PerformAnalysis(self, analysis_type):
         if self.circuit:
+            temp_file = NamedTemporaryFile(suffix='.png', delete=False).name
             try:
-                result_file = perform_analysis(self.circuit, analysis_type)
-            except ValueError as e:
+                perform_analysis(self.circuit, analysis_type, temp_file)
+            except Exception as e:
                 msg = QtWidgets.QMessageBox()
                 msg.setIcon(QtWidgets.QMessageBox.Critical)
                 msg.setText("Error")
@@ -93,8 +98,9 @@ class Controller():
                 msg.setWindowTitle("Error")
                 msg.exec_()
             else:
-                self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(result_file))
+                self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(temp_file))
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
+            os.remove(temp_file)
         else:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)

@@ -1,9 +1,9 @@
 # Import needed files for analysis
-from mesh_analysis import perform_mesh_analysis
-from nodal_analysis import perform_nodal_analysis
-from state_analysis import perform_state_space_analysis
-from plot_analysis import perform_plot_analysis
-from beginner_analysis import perform_beginner_analysis
+from Analysis_Methods.mesh_analysis import perform_mesh_analysis
+from Analysis_Methods.nodal_analysis import perform_nodal_analysis
+from Analysis_Methods.state_analysis import perform_state_space_analysis
+from Analysis_Methods.plot_analysis import perform_plot_analysis
+from Analysis_Methods.beginner_analysis import perform_beginner_analysis
 
 # Lcapy Implementation
 from lcapy import *
@@ -61,8 +61,8 @@ def request_node_property(circuit):
 # Dictionary for analysis by ainsley because this looks nicer and makes more sense
 analysis_functions = {
     'Draw circuit': lambda c: c.draw(),
-    'Mesh analysis': lambda c: perform_mesh_analysis(c),
-    'Nodal analysis': lambda c: perform_nodal_analysis(c),
+    'Mesh analysis': lambda c,f=None: perform_mesh_analysis(c,f),
+    'Nodal analysis': lambda c,f=None: perform_nodal_analysis(c,f),
     'Description': lambda c: c.description(),
     'Thevenin Analysis': lambda c: perform_thevenin_analysis(c),
     'Norton Analysis': lambda c: perform_norton_analysis(c),
@@ -77,14 +77,18 @@ analysis_functions = {
 }
 
 # Call the desired analysis and handle invalid types
-def perform_analysis(circuit, analysis_type):
+def perform_analysis(circuit, analysis_type, result_filename=None):
     
     analysis_function = analysis_functions.get(analysis_type)
     
     if analysis_function:
-        return analysis_function(circuit)
+        if result_filename:
+            return analysis_function(circuit, result_filename)
+        else:
+            return analysis_function(circuit)
     else:
         print("Invalid analysis type. Please choose a valid analysis type.")
+        raise ValueError(f"Invalid analysis type: {analysis_type}")
 
  
 # State Space Analysis moved to separate file
