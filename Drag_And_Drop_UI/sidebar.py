@@ -12,7 +12,7 @@ class Sidebar(QtWidgets.QGraphicsView):
         self.canvas = canvas
         self.setScene(QtWidgets.QGraphicsScene(self))
         self.create_sidebar_elements()  
-
+        
     def create_sidebar_elements(self):
         voltageSource = VoltageSource("Voltage Source", "Drag_And_Drop_UI/Images/voltage_source.png")
         resistor = Resistor("Resistor", "Drag_And_Drop_UI/Images/resistor_image.png")
