@@ -12,6 +12,9 @@ class Canvas(QtWidgets.QGraphicsView):
         super(Canvas, self).__init__(parent)
         self.setScene(QtWidgets.QGraphicsScene(self))
         self.setSceneRect(QtCore.QRectF(self.viewport().rect()))
+        # Set the background color of the scene
+        self.scene().setBackgroundBrush(QtGui.QBrush(QtGui.QColor("lightgray")))  # Change "lightgray" to your desired color
+        
         
         # Add a button to save the order
         self.save_button = QtWidgets.QPushButton("Save Order", self)
