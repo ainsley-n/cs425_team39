@@ -5,11 +5,21 @@ from Analysis_Methods.state_analysis import perform_state_space_analysis
 from Analysis_Methods.plot_analysis import perform_plot_analysis
 from Analysis_Methods.beginner_analysis import perform_beginner_analysis
 
+#image Conversion
+from Extra_Methods.ImageConverter import latex_to_png
+
 # Lcapy Implementation
 from lcapy import *
 from numpy import logspace
 
 from lcapy import state; state.current_sign_convention = 'passive'
+
+units = {
+    'v': 'V',
+    'i': 'A',
+    'r': 'R',
+    'c': 'F'
+}
 
 # Import an existing netlist 
 def create_circuit_from_file(file_path):
@@ -128,6 +138,12 @@ def perform_thevenin_transformation(circuit):
     print("These are the new values and drawing for your Norton equivalent circuit.")
     n.pprint()
     n.draw()
+    
+    # Generate LaTeX and PNG image of mesh equations
+    s = n.latex()
+
+    latex_to_png(s, 'thev_img')
+
 
 # Norton Transformation to thevenin equivalent using user defined current and resistance
 def perform_norton_transformation(circuit):
