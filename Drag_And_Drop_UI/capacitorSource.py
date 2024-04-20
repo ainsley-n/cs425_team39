@@ -61,7 +61,7 @@ class Capacitor(Element):
     def mousePressEvent(self, event):
         # Store the initial position of the element when the mouse is pressed
         self.initial_pos = self.pos()
-        print(f"Capacitor mousePressEvent - LeftButton: {self.mapToScene(event.pos()).x()}, {self.mapToScene(event.pos()).y()}")
+        # print(f"Capacitor mousePressEvent - LeftButton: {self.mapToScene(event.pos()).x()}, {self.mapToScene(event.pos()).y()}")
         super(Capacitor, self).mousePressEvent(event)
 
     def mouseMoveEvent(self, event):

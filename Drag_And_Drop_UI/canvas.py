@@ -12,14 +12,32 @@ class Canvas(QtWidgets.QGraphicsView):
         super(Canvas, self).__init__(parent)
         self.setScene(QtWidgets.QGraphicsScene(self))
         self.setSceneRect(QtCore.QRectF(self.viewport().rect()))
-        # Set the background color of the scene
-        self.scene().setBackgroundBrush(QtGui.QBrush(QtGui.QColor("lightgray")))  # Change "lightgray" to your desired color
         
+        # Set the background color of the scene
+        self.setStyleSheet("background-color: #FFF09E")
         
         # Add a button to save the order
         self.save_button = QtWidgets.QPushButton("Save Order", self)
         self.save_button.clicked.connect(self.save_order)
-        self.save_button.setGeometry(10, 10, 100, 30)
+        
+        # Change the background color of the button using CSS
+        self.save_button.setStyleSheet("background-color: #FF5733; color: black; border: 1px solid #1C2366;")
+
+        self.save_button.move(3, 3)
+        
+        # Check and print the canvas size
+        self.check_canvas_size()
+
+    def check_canvas_size(self):
+        scene_rect = self.sceneRect()
+        canvas_width = scene_rect.width()
+        canvas_height = scene_rect.height()
+        print(f"Canvas Width: {canvas_width}, Canvas Height: {canvas_height}")
+
+    # def snap_to_grid(self, position):
+    #     x = round(position.x() / self.grid_size) * self.grid_size
+    #     y = round(position.y() / self.grid_size) * self.grid_size
+    #     return QtCore.QPointF(x, y)
         
         
     def keyPressEvent(self, event):
@@ -90,66 +108,62 @@ class Canvas(QtWidgets.QGraphicsView):
                         element_info['connections'].append(connection_info)
                 print(f'name: {element_info["name"]}, {element_info["pos"]}, {element_info["connections"]}')
                 elements_info[name_label_text] = element_info
-                ##########################################################################################################################
-                ##########################################################################################################################
-                ##########HERE I AM STRUGGLING BECAUSE THE LOGIC TO FINDING THE DIRECTION ISNT CORRECT####################################
-                ##########MAYBE THINK OF DESIGNATING A POSITIVE AND NEGATIVE NODE TO VOLTAGE##############################################
         
         # Save the order and connection information to a .txt file
-        # file_path = QtWidgets.QFileDialog.getSaveFileName(self, 'Save Order', '', 'Text Files (*.txt);;All Files (*)')[0]
-        # if file_path:
-        #     with open(file_path, 'w') as file:
+        file_path = QtWidgets.QFileDialog.getSaveFileName(self, 'Save Order', '', 'Text Files (*.txt);;All Files (*)')[0]
+        if file_path:
+            with open(file_path, 'w') as file:
         
-        for element_name, element_info in elements_info.items():
-            if element_info['name'].isdigit():
-                continue
-            name = element_info['name']
-            value = element_info['values']
-            print(f"{name}", end="")
-            for connection in element_info['connections']:
-                print(f" {connection['other_element_name']}", end="")
-            # print(f' {value}')
-            if value is not None:     
-                if value != 0:#i am struggling here
-                # print(f'active here')
-                    print(f' {value}', end="")              #it is only printing the value when there is a print statement
-                # print(f'active here')
-            print(f"; {connection['direction']}")     #it should be printing the values of the voltage thingy next to the nodes its connected to
-            
-        # check if circular elements are next to eachother    
-        circular_elements = [element for element in elements if isinstance(element, CircularElement)]
-        printed_circular_connections  = set()
-        
-        for circular_element in circular_elements:
-            connected_circular_elements = []
-            name = circular_element.name_label.toPlainText()
-            # print(f"Checking connections for circular element {name}:")
-            for node in circular_element.nodes:
-                for wire in node.connected_wires():
-                    other_node = wire.start_node if wire.end_node == node else wire.end_node
-                    other_element = other_node.parentItem()
-                    if isinstance(other_element, CircularElement):
-                        connected_circular_elements.append(other_element)
-            # print(f"Found {len(connected_circular_elements)} connected circular elements.")
-            if connected_circular_elements:
-                for connected_element in connected_circular_elements:
-                    # Sort the circular element names to ensure consistency
-                    circular_connection = tuple(sorted([name, connected_element.name_label.toPlainText()]))
-                    # Check if the circular connection has already been printed
-                    if circular_connection not in printed_circular_connections:
-                        direction = connection['direction']  # Assign direction based on the current connection
-                        if connected_circular_elements[0].name_label.toPlainText() == '0':
-                            # print(f'{name} is connected to 0')
-                            print(f'W 0_{name} 0; {direction}')
-                        elif name == '0':
-                            # print(f'0 is connected to {connected_circular_elements[0].name_label.toPlainText()}')
-                            print(f'W 0 0_{connected_circular_elements[0].name_label.toPlainText()}; {direction}')
-                        else:
-                            print(f'{name} is connected to {connected_circular_elements[0].name_label.toPlainText()}')
-                        # Add the circular connection to the set of printed connections
-                        printed_circular_connections.add(circular_connection)
-            elif len(connected_circular_elements) > 2:
-                print(f"Error: More than three nodes connected together.")
+                for element_name, element_info in elements_info.items():
+                    if element_info['name'].isdigit():
+                        continue
+                    name = element_info['name']
+                    value = element_info['values']
+                    file.write(f"{name}")
+                    for connection in element_info['connections']:
+                        file.write(f" {connection['other_element_name']}")
+                    # print(f' {value}')
+                    if value is not None:     
+                        if value != 0:
+                        # print(f'active here')
+                            file.write(f' {value}')            
+                        # print(f'active here')
+                    file.write(f"; {connection['direction']}")     
+                    
+                # Check if circular elements are next to eachother    
+                circular_elements = [element for element in elements if isinstance(element, CircularElement)]
+                printed_circular_connections  = set()
+                
+                for circular_element in circular_elements:
+                    connected_circular_elements = []
+                    name = circular_element.name_label.toPlainText()
+                    # print(f"Checking connections for circular element {name}:")
+                    for node in circular_element.nodes:
+                        for wire in node.connected_wires():
+                            other_node = wire.start_node if wire.end_node == node else wire.end_node
+                            other_element = other_node.parentItem()
+                            if isinstance(other_element, CircularElement):
+                                connected_circular_elements.append(other_element)
+                    # print(f"Found {len(connected_circular_elements)} connected circular elements.")
+                    if connected_circular_elements:
+                        for connected_element in connected_circular_elements:
+                            # Sort the circular element names to ensure consistency
+                            circular_connection = tuple(sorted([name, connected_element.name_label.toPlainText()]))
+                            # Check if the circular connection has already been printed
+                            if circular_connection not in printed_circular_connections:
+                                direction = connection['direction']  # Assign direction based on the current connection
+                                if connected_circular_elements[0].name_label.toPlainText() == '0':
+                                    # print(f'{name} is connected to 0')
+                                    file.write(f'W {name} 0; {direction}')
+                                elif name == '0':
+                                    # print(f'0 is connected to {connected_circular_elements[0].name_label.toPlainText()}')
+                                    file.write(f'W 0 {connected_circular_elements[0].name_label.toPlainText()}; {direction}')
+                                else:
+                                    print(f'{name} is connected to {connected_circular_elements[0].name_label.toPlainText()}')
+                                # Add the circular connection to the set of printed connections
+                                printed_circular_connections.add(circular_connection)
+                    elif len(connected_circular_elements) > 2:
+                        print(f"Error: More than three nodes connected together.")
 
     # def access_voltage_source_label(self, voltage_source_name):
     #     for item in self.scene().items():
@@ -166,3 +180,11 @@ class Canvas(QtWidgets.QGraphicsView):
             
             # Clear the set of deleted_node_labels
             CircularElement.label_number = 0
+
+    def mousePressEvent(self, event):
+        # Get position of mouse press event
+        mouse_pos = event.pos()
+
+        print(f'Mouse press event on canvas at: {mouse_pos.x()}, {mouse_pos.y()}')
+        
+        return super().mousePressEvent(event)

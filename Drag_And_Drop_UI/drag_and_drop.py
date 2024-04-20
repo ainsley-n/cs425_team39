@@ -9,6 +9,22 @@ class MainWindow(QtWidgets.QMainWindow):
         
         self.sidebar = Sidebar(canvas)
         self.canvas = canvas
+        self.setWindowTitle("Circuit Editor")
+        # title_style = "font: bold 18px; color: blue;"
+        # self.setStyleSheet("QMainWindow::title {" + title_style + "}")
+        self.setStyleSheet("background-color: #1C2366")
+        
+        # Load image
+        # image_path = "XCircus/drag_and_drop_background.jpg" 
+        # background_pixmap = QtGui.QPixmap(image_path)
+        
+        # Create a palette with the background image
+        palette = QtGui.QPalette()
+        # palette.setBrush(QtGui.QPalette.Background, QtGui.QBrush(background_pixmap))
+        
+        # Set the palette for the main window
+        self.setPalette(palette)
+        
 
         layout = QtWidgets.QHBoxLayout()
         layout.addWidget(self.sidebar)
