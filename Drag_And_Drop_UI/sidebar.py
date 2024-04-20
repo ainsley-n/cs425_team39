@@ -13,7 +13,7 @@ class Sidebar(QtWidgets.QGraphicsView):
         self.setScene(QtWidgets.QGraphicsScene(self))
         self.setStyleSheet("background-color: #A6ADEB")
         self.create_sidebar_elements()  
-
+        
     def create_sidebar_elements(self):
         voltageSource = VoltageSource("Voltage Source", "Drag_And_Drop_UI/Images/voltage_source1.png")
         resistor = Resistor("Resistor", "Drag_And_Drop_UI/Images/resistor_image1.png")

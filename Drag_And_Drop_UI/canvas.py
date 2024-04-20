@@ -19,6 +19,7 @@ class Canvas(QtWidgets.QGraphicsView):
         # Add a button to save the order
         self.save_button = QtWidgets.QPushButton("Save Order", self)
         self.save_button.clicked.connect(self.save_order)
+
         
         # Change the background color of the button using CSS
         self.save_button.setStyleSheet("background-color: #FF5733; color: black; border: 1px solid #1C2366;")
@@ -33,11 +34,6 @@ class Canvas(QtWidgets.QGraphicsView):
         canvas_width = scene_rect.width()
         canvas_height = scene_rect.height()
         print(f"Canvas Width: {canvas_width}, Canvas Height: {canvas_height}")
-
-    # def snap_to_grid(self, position):
-    #     x = round(position.x() / self.grid_size) * self.grid_size
-    #     y = round(position.y() / self.grid_size) * self.grid_size
-    #     return QtCore.QPointF(x, y)
         
         
     def keyPressEvent(self, event):
@@ -101,16 +97,30 @@ class Canvas(QtWidgets.QGraphicsView):
                         # print('in wire for node.conected_wire')
                         other_node = wire.start_node if wire.end_node == node else wire.end_node
                         other_element = other_node.parentItem()
+                        
+                        # Calculate the x and y distances between nodes
+                        dx = abs(node.scenePos().x() - other_node.scenePos().x())
+                        dy = abs(node.scenePos().y() - other_node.scenePos().y())
+                        
+                        # Determine the direction based on distances
+                        if dx > dy:
+                            direction = 'right' if node.scenePos().x() < other_node.scenePos().x() else 'left'
+                        else:
+                            direction = 'down' if node.scenePos().y() < other_node.scenePos().y() else 'up'
+                        
                         connection_info = {
                             'other_element_name': other_element.name_label.toPlainText(),
-                            'direction': 'right' if wire.line().dx() > 0 else 'left' if wire.line().dx() < 0 else 'down' if wire.line().dy() > 0 else 'up'
+                            'direction': direction
                         }
                         element_info['connections'].append(connection_info)
                 print(f'name: {element_info["name"]}, {element_info["pos"]}, {element_info["connections"]}')
                 elements_info[name_label_text] = element_info
         
         # Save the order and connection information to a .txt file
+
         file_path = QtWidgets.QFileDialog.getSaveFileName(self, 'Save Order', '', 'Text Files (*.txt);;All Files (*)')[0]
+
+
         if file_path:
             with open(file_path, 'w') as file:
         
@@ -144,6 +154,7 @@ class Canvas(QtWidgets.QGraphicsView):
                             other_element = other_node.parentItem()
                             if isinstance(other_element, CircularElement):
                                 connected_circular_elements.append(other_element)
+                                
                     # print(f"Found {len(connected_circular_elements)} connected circular elements.")
                     if connected_circular_elements:
                         for connected_element in connected_circular_elements:
@@ -158,6 +169,7 @@ class Canvas(QtWidgets.QGraphicsView):
                                 elif name == '0':
                                     # print(f'0 is connected to {connected_circular_elements[0].name_label.toPlainText()}')
                                     file.write(f'W 0 {connected_circular_elements[0].name_label.toPlainText()}; {direction}')
+
                                 else:
                                     print(f'{name} is connected to {connected_circular_elements[0].name_label.toPlainText()}')
                                 # Add the circular connection to the set of printed connections
