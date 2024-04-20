@@ -79,7 +79,7 @@ analysis_functions = {
     'Thevenin-Norton Transformation': lambda c,f=None: perform_thevenin_transformation(c,f),
     'Norton-Thevenin Transformation': lambda c,f=None: perform_norton_transformation(c,f),
     'State Space Analysis': lambda c: perform_state_space_analysis(c),
-    'For Beginners': lambda c: perform_beginner_analysis(),
+    'For Beginners': lambda f=None: perform_beginner_analysis(f),
     'Plotting': lambda c: perform_plot_analysis(),
     'Component Property': lambda c: request_component_property(c),
     'Node Property': lambda c: request_node_property(c),
