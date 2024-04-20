@@ -31,8 +31,8 @@ class Inductor(Element):
             self.nodes = [
                 # Node(self, self.boundingRect().topLeft() + QtCore.QPointF(self.boundingRect().width() / 2, 0)),  # Top middle
                 # Node(self, self.boundingRect().topLeft() + QtCore.QPointF(self.boundingRect().width() / 2, self.boundingRect().height())),  # Bottom middle
-                Node(self, self.boundingRect().topLeft() + QtCore.QPointF(0, self.boundingRect().height() -3)),  # Left middle
-                Node(self, self.boundingRect().topLeft() + QtCore.QPointF(self.boundingRect().width(), self.boundingRect().height() -3))  # Right middle
+                Node(self, self.boundingRect().topLeft() + QtCore.QPointF(0, self.boundingRect().height() -10)),  # Left middle
+                Node(self, self.boundingRect().topLeft() + QtCore.QPointF(self.boundingRect().width(), self.boundingRect().height() -10))  # Right middle
             ]
             
     def clone(self):
@@ -55,7 +55,7 @@ class Inductor(Element):
     
     def updateNameLabel(self):
         # Update the name label with the current name and label number
-        self.name_label.setPlainText(f"C{self.label_number}")
+        self.name_label.setPlainText(f"L{self.label_number}")
         self.name_label.show()
         
     def mousePressEvent(self, event):

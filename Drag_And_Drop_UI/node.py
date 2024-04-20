@@ -7,7 +7,7 @@ class Node(QtWidgets.QGraphicsEllipseItem):
         super(Node, self).__init__(parent)
         self.setRect(-3, -3, 6, 6)  # Adjust the size of the node
         self.setPos(position)
-        self.setBrush(QtGui.QColor("red"))
+        self.setBrush(QtGui.QColor("#BD0000"))
         self.setAcceptHoverEvents(True)
         self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.setCursor(QtCore.Qt.PointingHandCursor)
@@ -18,12 +18,14 @@ class Node(QtWidgets.QGraphicsEllipseItem):
         # Change the color when the mouse hovers over the node
         # print('Hovering Node')
         self.hovering = True
+        self.setRect(-6, -6, 9, 9)  # Increase the size of the node
         super(Node, self).hoverEnterEvent(event)
 
     def hoverLeaveEvent(self, event):
         # Restore the original color when the mouse leaves the node
         # print('Stop hovering node')
         self.hovering = False
+        self.setRect(-3, -3, 6, 6)  # Restore the original size of the node
         super(Node, self).hoverLeaveEvent(event)
 
     def mousePressEvent(self, event):

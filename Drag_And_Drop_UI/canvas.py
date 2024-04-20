@@ -22,7 +22,7 @@ class Canvas(QtWidgets.QGraphicsView):
 
         
         # Change the background color of the button using CSS
-        self.save_button.setStyleSheet("background-color: #FF5733; color: black; border: 1px solid #1C2366;")
+        self.save_button.setStyleSheet("background-color: #BD0000; color: white; border: 1px solid #1C2366;")
 
         self.save_button.move(3, 3)
         
@@ -138,7 +138,7 @@ class Canvas(QtWidgets.QGraphicsView):
                         # print(f'active here')
                             file.write(f' {value}')            
                         # print(f'active here')
-                    file.write(f"; {connection['direction']}")     
+                    file.write(f"; {connection['direction']}\n")     
                     
                 # Check if circular elements are next to eachother    
                 circular_elements = [element for element in elements if isinstance(element, CircularElement)]
@@ -165,10 +165,10 @@ class Canvas(QtWidgets.QGraphicsView):
                                 direction = connection['direction']  # Assign direction based on the current connection
                                 if connected_circular_elements[0].name_label.toPlainText() == '0':
                                     # print(f'{name} is connected to 0')
-                                    file.write(f'W {name} 0; {direction}')
+                                    file.write(f'W {name} 0; {direction}\n')
                                 elif name == '0':
                                     # print(f'0 is connected to {connected_circular_elements[0].name_label.toPlainText()}')
-                                    file.write(f'W 0 {connected_circular_elements[0].name_label.toPlainText()}; {direction}')
+                                    file.write(f'W 0 {connected_circular_elements[0].name_label.toPlainText()}; {direction}\n')
 
                                 else:
                                     print(f'{name} is connected to {connected_circular_elements[0].name_label.toPlainText()}')

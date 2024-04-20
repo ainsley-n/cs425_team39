@@ -82,6 +82,9 @@ class Element(QtWidgets.QGraphicsPixmapItem):
         
         # Rotate the item by 90 degrees
         self.setRotation(self.rotation() + 90)
+        
+         # Rotate the label in the opposite direction to keep it upright
+        self.value_label.setRotation(self.rotation() - 90)
 
         
     # def set_value(self, value):
