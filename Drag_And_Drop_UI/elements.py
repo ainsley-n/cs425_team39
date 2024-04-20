@@ -13,15 +13,14 @@ class Element(QtWidgets.QGraphicsPixmapItem):
         self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.name = name
         self.nodes = []
-        self.init_nodes()
         
         self.value_label = QtWidgets.QGraphicsTextItem("", self)
         self.value_label.setDefaultTextColor(QtGui.QColor("black"))
         self.value_label.setFont(QtGui.QFont("Arial", 8))
         # value_rect = self.value_label.boundingRect()
         self.value_label.setPos(self.boundingRect().bottomLeft().x() - 20, self.boundingRect().bottom() - 5)
-        self.value_label.hide()  # Initially hide the value label
-    
+        self.value_label.hide()  # Initially hide the value label 
+        
     # def init_nodes(self):
     #     # Create nodes at desired positions
     #     if not self.nodes:
@@ -170,7 +169,6 @@ class CircularElement(QtWidgets.QGraphicsEllipseItem):
     def mouseMoveEvent(self, event):
         # print(f"CircularElement mouseMoveEvent - LeftButton: {self.mapToScene(event.pos()).x()}, {self.mapToScene(event.pos()).y()}")
         super(CircularElement, self).mouseMoveEvent(event)
-
         # Update the position of connected wires
         for node in self.nodes:
             for wire in node.connected_wires():
@@ -194,214 +192,3 @@ class CircularElement(QtWidgets.QGraphicsEllipseItem):
     def get_value(self):
         return None
   
-        
-# class Capacitor(Element):
-#     deleted_capacitor_labels = set()
-#     label_number = 1  
-    
-#     @classmethod
-#     def increment_label_number(cls):
-#         cls.label_number += 1
-
-#     def __init__(self, name, rect, color, parent=None):
-#         super().__init__(name, rect, color, parent)
-        
-#         # Create a QGraphicsTextItem to display the name beneath the circle
-#         self.name_label = QtWidgets.QGraphicsTextItem("", self)
-#         self.name_label.setDefaultTextColor(QtGui.QColor("black"))
-#         self.name_label.setFont(QtGui.QFont("Arial", 8))
-#         # name_rect = self.name_label.boundingRect()
-#         self.name_label.setPos(self.rect().center().x() - self.name_label.boundingRect().width() / 2,
-#                         self.rect().center().y() - self.name_label.boundingRect().height() / 2)
-#         self.name_label.hide()  # Initially hide the name label
-#         self.capacitance_value = 0
-        
-#     def clone(self):
-#         # Create a new instance with the same properties
-#         cloned_capacitor = Capacitor("", self.rect(), self.brush().color().lighter())
-#         cloned_capacitor.init_nodes()
-        
-#         # Check if there are deleted node labels to reuse
-#         if self.deleted_capacitor_labels:
-#             cloned_capacitor.label_number = self.deleted_capacitor_labels.pop()
-#         else:
-#             # Increment the label number for the next CircularElement clone
-#             cloned_capacitor.label_number = self.label_number
-#             Capacitor.increment_label_number()
-        
-#         # Update the name label for the clone
-#         cloned_capacitor.updateNameLabel()
-        
-#         return cloned_capacitor
-    
-#     def updateNameLabel(self):
-#         # Update the name label with the current name and label number
-#         self.name_label.setPlainText(f"C{self.label_number}")
-#         self.name_label.show()
-        
-#     def mousePressEvent(self, event):
-#         # Store the initial position of the element when the mouse is pressed
-#         self.initial_pos = self.pos()
-#         print(f"Capacitor mousePressEvent - LeftButton: {self.mapToScene(event.pos()).x()}, {self.mapToScene(event.pos()).y()}")
-#         super(Capacitor, self).mousePressEvent(event)
-
-#     def mouseMoveEvent(self, event):
-#         super(Capacitor, self).mouseMoveEvent(event)
-
-#         # Update the position of connected wires
-#         for node in self.nodes:
-#             for wire in node.connected_wires():
-#                 if wire.start_node == node:
-#                     # Update the start position if the moving element is the start node
-#                     # print("Updating start position")
-#                     line = QtCore.QLineF(node.scenePos(), wire.line().p2())
-#                 elif wire.end_node == node:
-#                     # Update the end position if the moving element is the end node
-#                     # print("Updating end position")
-#                     line = QtCore.QLineF(wire.line().p1(), node.scenePos())
-#                 else:
-#                     continue
-#                 wire.setLine(line)
-        
-#     def deleteCapacitor(self):
-#         # Add the label number of the deleted node to the set for reuse
-#         self.deleted_capacitor_labels.add(self.label_number)
-#         # print(f'adding {self.label_number} to array')
-        
-#     def mouseDoubleClickEvent(self, event):
-#         # Get the scene
-#         scene = self.scene()
-#         if scene is None:
-#             return
-
-#         # Get the first view associated with the scene
-#         view = scene.views()[0]
-#         dialog = QtWidgets.QInputDialog(view)
-#         dialog.setWindowTitle("Capacitor")
-#         dialog.setLabelText("Enter the Capacitance:")
-#         dialog.setOkButtonText("Set")
-#         dialog.setCancelButtonText("Cancel")
-#         dialog.setInputMode(QtWidgets.QInputDialog.DoubleInput)
-#         dialog.setDoubleRange(0, 1000)  # Set the range for the resistor
-#         dialog.setDoubleDecimals(2)  # Set the number of decimals
-#         dialog.setDoubleValue(self.get_value())  # Set the initial value
-
-#         if dialog.exec_() == QtWidgets.QDialog.Accepted:
-#             value = dialog.doubleValue()
-#             self.set_value(value)
-
-#     def get_value(self):
-#         # Retrieve the current value of the resistor 
-#         return self.capacitance_value
-
-#     def set_value(self, value):
-#         # Set the value of the resisitor
-#         self.capacitance_value = value
-#         self.value_label.setPlainText(f"{value} F")
-#         self.value_label.show()
-        
-        
-# class Inductor(Element):
-#     deleted__labels = set()
-#     label_number = 1  
-    
-#     @classmethod
-#     def increment_label_number(cls):
-#         cls.label_number += 1
-
-#     def __init__(self, name, rect, color, parent=None):
-#         super().__init__(name, rect, color, parent)
-        
-#         # Create a QGraphicsTextItem to display the name beneath the circle
-#         self.name_label = QtWidgets.QGraphicsTextItem("", self)
-#         self.name_label.setDefaultTextColor(QtGui.QColor("black"))
-#         self.name_label.setFont(QtGui.QFont("Arial", 8))
-#         # name_rect = self.name_label.boundingRect()
-#         self.name_label.setPos(self.rect().center().x() - self.name_label.boundingRect().width() / 2,
-#                         self.rect().center().y() - self.name_label.boundingRect().height() / 2)
-#         self.name_label.hide()  # Initially hide the name label
-#         self.inductance_value = 0
-        
-#     def clone(self):
-#         # Create a new instance with the same properties
-#         cloned_inductor = Inductor("", self.rect(), self.brush().color().lighter())
-#         cloned_inductor.init_nodes()
-        
-#         # Check if there are deleted node labels to reuse
-#         if self.deleted_inductor_labels:
-#             cloned_inductor.label_number = self.deleted_inductor_labels.pop()
-#         else:
-#             # Increment the label number for the next CircularElement clone
-#             cloned_inductor.label_number = self.label_number
-#             Inductor.increment_label_number()
-        
-#         # Update the name label for the clone
-#         cloned_inductor.updateNameLabel()
-        
-#         return cloned_inductor
-    
-#     def updateNameLabel(self):
-#         # Update the name label with the current name and label number
-#         self.name_label.setPlainText(f"L{self.label_number}")
-#         self.name_label.show()
-        
-#     def mousePressEvent(self, event):
-#         # Store the initial position of the element when the mouse is pressed
-#         self.initial_pos = self.pos()
-#         print(f"Inductor mousePressEvent - LeftButton: {self.mapToScene(event.pos()).x()}, {self.mapToScene(event.pos()).y()}")
-#         super(Inductor, self).mousePressEvent(event)
-
-#     def mouseMoveEvent(self, event):
-#         super(Inductor, self).mouseMoveEvent(event)
-
-#         # Update the position of connected wires
-#         for node in self.nodes:
-#             for wire in node.connected_wires():
-#                 if wire.start_node == node:
-#                     # Update the start position if the moving element is the start node
-#                     # print("Updating start position")
-#                     line = QtCore.QLineF(node.scenePos(), wire.line().p2())
-#                 elif wire.end_node == node:
-#                     # Update the end position if the moving element is the end node
-#                     # print("Updating end position")
-#                     line = QtCore.QLineF(wire.line().p1(), node.scenePos())
-#                 else:
-#                     continue
-#                 wire.setLine(line)
-        
-#     def deleteInductor(self):
-#         # Add the label number of the deleted node to the set for reuse
-#         self.deleted_inductor_labels.add(self.label_number)
-#         # print(f'adding {self.label_number} to array')
-        
-#     def mouseDoubleClickEvent(self, event):
-#         # Get the scene
-#         scene = self.scene()
-#         if scene is None:
-#             return
-
-#         # Get the first view associated with the scene
-#         view = scene.views()[0]
-#         dialog = QtWidgets.QInputDialog(view)
-#         dialog.setWindowTitle("Capacitor")
-#         dialog.setLabelText("Enter the Capacitance:")
-#         dialog.setOkButtonText("Set")
-#         dialog.setCancelButtonText("Cancel")
-#         dialog.setInputMode(QtWidgets.QInputDialog.DoubleInput)
-#         dialog.setDoubleRange(0, 1000)  # Set the range for the resistor
-#         dialog.setDoubleDecimals(2)  # Set the number of decimals
-#         dialog.setDoubleValue(self.get_value())  # Set the initial value
-
-#         if dialog.exec_() == QtWidgets.QDialog.Accepted:
-#             value = dialog.doubleValue()
-#             self.set_value(value)
-
-#     def get_value(self):
-#         # Retrieve the current value of the resistor 
-#         return self.inductance_value
-
-#     def set_value(self, value):
-#         # Set the value of the resisitor
-#         self.inductance_value = value
-#         self.value_label.setPlainText(f"{value} F")
-#         self.value_label.show()
