@@ -7,7 +7,7 @@ class Node(QtWidgets.QGraphicsEllipseItem):
         super(Node, self).__init__(parent)
         self.setRect(-3, -3, 6, 6)  # Adjust the size of the node
         self.setPos(position)
-        self.setBrush(QtGui.QColor("#BD0000"))
+        self.setBrush(QtGui.QColor("#183B23"))
         self.setAcceptHoverEvents(True)
         self.setFlag(QtWidgets.QGraphicsItem.ItemIsSelectable)
         self.setCursor(QtCore.Qt.PointingHandCursor)
