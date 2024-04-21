@@ -11,15 +11,16 @@ class Sidebar(QtWidgets.QGraphicsView):
         super(Sidebar, self).__init__(parent)
         self.canvas = canvas
         self.setScene(QtWidgets.QGraphicsScene(self))
-        self.setStyleSheet("background-color: #A6ADEB")
+        self.setStyleSheet("background-color: #DDB68F")
         self.create_sidebar_elements()  
+        self.setFixedWidth(200)
         
     def create_sidebar_elements(self):
         voltageSource = VoltageSource("Voltage Source", "Drag_And_Drop_UI/Images/voltage_source1.png")
         resistor = Resistor("Resistor", "Drag_And_Drop_UI/Images/resistor_image1.png")
         capacitor = Capacitor("Capacitor", "Drag_And_Drop_UI/Images/capacitor_image1.png")
         inductor = Inductor("Inductor", "Drag_And_Drop_UI/Images/inductor_image1.png")
-        node = CircularElement("Node", QtCore.QRectF(0, 250, 50, 20), QtGui.QColor("blue"))
+        node = CircularElement("Node", QtCore.QRectF(0, 250, 50, 20), QtGui.QColor("#DB8156"))
         
         voltageSource.setPos(0, 0)
         resistor.setPos(-10, 70)

@@ -12,7 +12,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.setWindowTitle("Circuit Editor")
         # title_style = "font: bold 18px; color: blue;"
         # self.setStyleSheet("QMainWindow::title {" + title_style + "}")
-        self.setStyleSheet("background-color: #1C2366")
+        self.setStyleSheet("background-color: #536B40")
         
         # Load image
         # image_path = "XCircus/drag_and_drop_background.jpg" 

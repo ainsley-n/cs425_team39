@@ -14,7 +14,7 @@ class Canvas(QtWidgets.QGraphicsView):
         self.setSceneRect(QtCore.QRectF(self.viewport().rect()))
         
         # Set the background color of the scene
-        self.setStyleSheet("background-color: #FFF09E")
+        self.setStyleSheet("background-color: #F5E9DA")
         
         # Add a button to save the order
         self.save_button = QtWidgets.QPushButton("Save Order", self)
@@ -22,7 +22,7 @@ class Canvas(QtWidgets.QGraphicsView):
 
         
         # Change the background color of the button using CSS
-        self.save_button.setStyleSheet("background-color: #FF5733; color: black; border: 1px solid #1C2366;")
+        self.save_button.setStyleSheet("background-color: #E29462; color: white; border: 1px solid #DB8156;")
 
         self.save_button.move(3, 3)
         
@@ -138,7 +138,7 @@ class Canvas(QtWidgets.QGraphicsView):
                         # print(f'active here')
                             file.write(f' {value}')            
                         # print(f'active here')
-                    file.write(f"; {connection['direction']}")     
+                    file.write(f"; {connection['direction']}\n")     
                     
                 # Check if circular elements are next to eachother    
                 circular_elements = [element for element in elements if isinstance(element, CircularElement)]
@@ -162,16 +162,25 @@ class Canvas(QtWidgets.QGraphicsView):
                             circular_connection = tuple(sorted([name, connected_element.name_label.toPlainText()]))
                             # Check if the circular connection has already been printed
                             if circular_connection not in printed_circular_connections:
-                                direction = connection['direction']  # Assign direction based on the current connection
-                                if connected_circular_elements[0].name_label.toPlainText() == '0':
-                                    # print(f'{name} is connected to 0')
-                                    file.write(f'W {name} 0; {direction}')
-                                elif name == '0':
-                                    # print(f'0 is connected to {connected_circular_elements[0].name_label.toPlainText()}')
-                                    file.write(f'W 0 {connected_circular_elements[0].name_label.toPlainText()}; {direction}')
-
-                                else:
-                                    print(f'{name} is connected to {connected_circular_elements[0].name_label.toPlainText()}')
+                                # Calculate direction based on relative positions of nodes
+                                for node in circular_element.nodes:
+                                    for wire in node.connected_wires():
+                                        other_node = wire.start_node if wire.end_node == node else wire.end_node
+                                        other_element = other_node.parentItem()
+                                        if isinstance(other_element, CircularElement) and other_element in connected_circular_elements:
+                                            dx = other_node.scenePos().x() - node.scenePos().x()
+                                            dy = other_node.scenePos().y() - node.scenePos().y()
+                                            if abs(dx) > abs(dy):
+                                                direction = 'right' if dx > 0 else 'left'
+                                            else:
+                                                direction = 'down' if dy > 0 else 'up'
+                                            # Write the connection to file
+                                            if connected_circular_elements[0].name_label.toPlainText() == '0':
+                                                file.write(f'W {name} 0; {direction}\n')
+                                            elif name == '0':
+                                                file.write(f'W 0 {connected_circular_elements[0].name_label.toPlainText()}; {direction}\n')
+                                            else:
+                                                file.write(f'W {name} {connected_circular_elements[0].name_label.toPlainText()}; {direction}\n')
                                 # Add the circular connection to the set of printed connections
                                 printed_circular_connections.add(circular_connection)
                     elif len(connected_circular_elements) > 2:

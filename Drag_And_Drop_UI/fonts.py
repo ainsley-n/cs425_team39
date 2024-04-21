@@ -28,7 +28,7 @@ def main():
         # Set the font of the label
         font = QFont(font_family)
         font.setPointSize(40)
-        label.setFont(font)
+        label.setFont("Arial")
         
         # Set the color of the label text
         label.setStyleSheet("color: #FDE66C; border-style: outset; border-width: 2px; border-color: beige;")
