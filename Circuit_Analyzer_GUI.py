@@ -1,6 +1,6 @@
 import sys
 import os
-from PyQt5 import QtWidgets, QtGui
+from PyQt5 import QtWidgets, QtGui, QtCore
 from tempfile import NamedTemporaryFile
 
 from GUI.ui_MainMenu import Ui_MainWindow
@@ -43,9 +43,16 @@ class Controller():
         self.file_path = ""
         self.circuit = None
         self.editor = drag_and_drop.MainWindow(drag_and_drop.Canvas())
+                
+        styleFile = QtCore.QFile(os.path.join(dirname, 'GUI/style.qss'))
+        styleFile.open(QtCore.QFile.ReadOnly)
+        style = str(styleFile.readAll() , encoding='utf-8')
+
         self.mainMenu = MainWindow(self)
+        self.mainMenu.setStyleSheet(style)
         self.analysisWindow = AnalysisWindow(self)
-        self.mainMenu.show()
+        self.analysisWindow.setStyleSheet(style)
+        self.mainMenu.showMaximized()
     def OpenEditor(self):
         self.editor = drag_and_drop.MainWindow(drag_and_drop.Canvas())
         self.editor.show()
@@ -77,7 +84,7 @@ class Controller():
                 self.analysisWindow.ui.CircuitImage.setPixmap(QtGui.QPixmap(temp_file))
                 os.remove(temp_file)
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(0)
-                self.analysisWindow.show()
+                self.analysisWindow.showMaximized()
                 self.mainMenu.hide()
     def SaveFile(self):
         new_file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', '', 'Text Files (*.txt);;All Files (*)')[0]

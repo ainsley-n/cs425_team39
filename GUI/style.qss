@@ -1,0 +1,25 @@
+QMainWindow {
+    background-color: #536B40;
+}
+
+QLabel {
+    background-color: #E29462;
+    color: White;
+    border-style: outset;
+    border-width: 2px;
+    border-color: beige;
+}
+QPushButton {
+    background-color: #F5E9DA;
+    border-style: outset;
+    border-width: 2px;
+    border-radius: 10px;
+    border-color: beige;
+    font: bold 14px;
+    min-width: 10em;
+    padding: 6px;
+}
+QPushButton:pressed {
+    background-color: #dbc8af;
+    border-style: inset;
+}
