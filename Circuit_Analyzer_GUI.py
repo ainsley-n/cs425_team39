@@ -6,12 +6,18 @@ from tempfile import NamedTemporaryFile
 
 from GUI.ui_MainMenu import Ui_MainWindow
 from GUI.ui_AnalysisOptions import Ui_AnalysisWindow
+from GUI.ui_RequestProperty import Ui_RequestProperty
 from Drag_And_Drop_UI import drag_and_drop
 
 from Circuit_Analyzer import create_circuit_from_file
 from Circuit_Analyzer import perform_analysis
 from Circuit_Analyzer import perform_norton_analysis
 from Circuit_Analyzer import perform_thevenin_analysis
+from Circuit_Analyzer import get_component_property
+from Circuit_Analyzer import get_node_property
+
+from Extra_Methods.LatexConverter import latexSingleTerm
+from Extra_Methods.ImageConverter import latex_to_png
 from lcapy import Circuit
 
 dirname = os.path.dirname(__file__)
@@ -45,6 +51,51 @@ class AnalysisWindow(QtWidgets.QMainWindow):
         self.ui.switchResult.clicked.connect(controller.SwitchResult)
         self.ui.exportButton.clicked.connect(controller.ExportResults)
         self.ui.homeButton.clicked.connect(controller.showHome)
+        self.ui.RequestProperty.clicked.connect(controller.OpenPropertyRequest)
+
+class RequestProperty(QtWidgets.QMainWindow):
+    def __init__(self, controller):
+        super(RequestProperty, self).__init__()
+        self.ui = Ui_RequestProperty()
+        self.ui.setupUi(self)
+        self.controller = controller
+        self.ui.NodeButton.clicked.connect(self.ui.VoltageButton.setChecked)
+        self.ui.NodeButton.clicked.connect(self.ui.CurrentButton.setDisabled)
+        self.ui.ComponentButton.clicked.connect(self.ui.CurrentButton.setEnabled)
+
+        #populate combobox when component or node button is clicked
+        self.ui.ComponentButton.clicked.connect(self.populateComponents)
+        self.ui.NodeButton.clicked.connect(self.populateNodes)
+
+        self.ui.getPropertyBtn.clicked.connect(controller.DisplayProperty)
+
+    def populateComponents(self):
+        self.ui.comboBox.clear()
+        #get list of components from controller circuit
+        try:
+            component_list = self.controller.circuit.sources + self.controller.circuit.components.resistors
+            component_list += (self.controller.circuit.components.capacitors + self.controller.circuit.components.inductors)
+            print(component_list)
+        except Exception as e:
+            controller.ErrorBox(str(e))
+            return
+        #add components to combobox
+        self.ui.comboBox.addItems(component_list)
+    #populateComponents
+
+    def populateNodes(self):
+        self.ui.comboBox.clear()
+        #get list of nodes from controller circuit
+        try:
+            nodes = self.controller.circuit.nodes
+            node_list = list(nodes.keys())
+            node_list = sorted([node for node in node_list if node.isnumeric()], key=int)
+        except Exception as e:
+            controller.ErrorBox(str(e))
+            return
+        #add nodes to combobox
+        self.ui.comboBox.addItems(node_list)
+    #populateNodes
         
 
 class Controller():
@@ -57,14 +108,17 @@ class Controller():
         self.simplified_circuit = None
         self.simplified_circuit_image = None
         self.simplified_circuit_showing = False
+
         self.editor = drag_and_drop.MainWindow(drag_and_drop.Canvas())
-                
+
         styleFile = QtCore.QFile(os.path.join(dirname, 'GUI/style.qss'))
         styleFile.open(QtCore.QFile.ReadOnly)
         style = str(styleFile.readAll() , encoding='utf-8')
 
         self.mainMenu = MainWindow(self)
         self.mainMenu.setStyleSheet(style)
+        self.requestProperty = RequestProperty(self)
+        #self.requestProperty.setStyleSheet(style)
         self.analysisWindow = AnalysisWindow(self)
         self.analysisWindow.setStyleSheet(style)
         self.mainMenu.showMaximized()
@@ -78,6 +132,10 @@ class Controller():
         self.editor = drag_and_drop.MainWindow(drag_and_drop.Canvas())
         self.editor.show()
     #OpenEditor
+
+    def OpenPropertyRequest(self):
+        self.requestProperty = RequestProperty(self)
+        self.requestProperty.show()
 
     def OpenFile(self):
         new_file_path = QtWidgets.QFileDialog.getOpenFileName(None, 'Open File', '', 'All Files (*)')[0]
@@ -172,6 +230,7 @@ class Controller():
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
                 self.analysisWindow.ui.switchResult.show()
                 self.analysisWindow.ui.switchResult.setText('Show Simplified Circuit')
+                self.simplified_circuit_showing = False
         else:
             self.ErrorBox('No circuit loaded.\nPlease load a circuit.')
     #PerformNortonAnalysis
@@ -214,6 +273,7 @@ class Controller():
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
                 self.analysisWindow.ui.switchResult.show()
                 self.analysisWindow.ui.switchResult.setText('Show Simplified Circuit')
+                self.simplified_circuit_showing = False
         else:
             self.ErrorBox('No circuit loaded.\nPlease load a circuit.')
     #PerformTheveninAnalysis
@@ -272,6 +332,50 @@ class Controller():
                 self.ErrorBox('No file selected.')
         else:
             self.ErrorBox('No circuit to export.')
+    #ExportCircuit
+
+    def DisplayProperty(self):
+        if self.circuit is not None:
+            #get user input
+            element = self.requestProperty.ui.comboBox.currentText()
+            if element == '':
+                self.ErrorBox('Please select a component or node.')
+                return
+            property = 'v' if self.requestProperty.ui.VoltageButton.isChecked() else 'i' if self.requestProperty.ui.CurrentButton.isChecked() else None
+            if property is None:
+                self.ErrorBox('Please select a property.')
+                return
+            try:
+                if self.requestProperty.ui.ComponentButton.isChecked():
+                    property_value = get_component_property(self.circuit, element, property)
+                elif self.requestProperty.ui.NodeButton.isChecked():
+                    property_value = get_node_property(self.circuit, int(element), property)
+                else:
+                    self.ErrorBox('Please select component or node.')
+                    return
+            except Exception as e:
+                self.ErrorBox(str(e))
+                return
+            self.requestProperty.hide()
+            # turn property into latex image
+            if self.analysis_image is None:
+                self.analysis_image = NamedTemporaryFile(suffix='.png', delete=False).name
+            try:
+                latex = latexSingleTerm(property_value, property)
+                self.analysis_pdf = latex_to_png(latex, self.analysis_image)
+            except Exception as e:
+                self.ErrorBox(str(e))
+                return
+            self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
+            self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
+            self.analysisWindow.ui.switchResult.hide()
+            self.simplified_circuit_showing = False
+        else:
+            self.ErrorBox('No circuit loaded.\nPlease load a circuit.')
+    #DisplayProperty
+            
+            
+
 
     def ErrorBox(self, message):
         msg = QtWidgets.QMessageBox()
