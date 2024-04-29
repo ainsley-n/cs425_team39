@@ -105,7 +105,7 @@
            </widget>
           </item>
           <item row="5" column="0">
-           <widget class="QPushButton" name="StateSpaceAnalysis">
+           <widget class="QPushButton" name="ExportCircuitBtn">
             <property name="sizePolicy">
              <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
               <horstretch>0</horstretch>

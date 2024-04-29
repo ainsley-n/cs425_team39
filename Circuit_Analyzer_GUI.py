@@ -1,5 +1,6 @@
 import sys
 import os
+from shutil import copyfile
 from PyQt5 import QtWidgets, QtGui, QtCore
 from tempfile import NamedTemporaryFile
 
@@ -39,8 +40,10 @@ class AnalysisWindow(QtWidgets.QMainWindow):
         self.ui.NodeAnalysis.clicked.connect(lambda: controller.PerformAnalysis('Nodal analysis'))
         self.ui.TheveninAnalysis.clicked.connect(controller.PerformTheveninAnalysis)
         self.ui.NortonAnalysis.clicked.connect(controller.PerformNortonAnalysis)
+        self.ui.ExportCircuitBtn.clicked.connect(lambda: controller.ExportCircuit(controller.circuit))
         self.ui.backButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0))
         self.ui.switchResult.clicked.connect(controller.SwitchResult)
+        self.ui.exportButton.clicked.connect(controller.ExportResults)
         
 
 class Controller():
@@ -221,7 +224,49 @@ class Controller():
             self.simplified_circuit_showing = False
     #SwitchResult
 
+    def ExportResults(self):
+        if not self.simplified_circuit_showing:
+            # get file path for pdf or png
+            file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', 'Documents/result.pdf', 'PDF Files (*.pdf);;PNG Files (*.png)')[0]
+            if file_path:
+                try:
+                    if file_path.endswith('.pdf'):
+                        copyfile(self.analysis_pdf, file_path)
+                    elif file_path.endswith('.png'):
+                        copyfile(self.analysis_image, file_path)
+                    else:
+                        self.ErrorBox('Invalid file type.\nPlease select a PDF or PNG file.')
+                except Exception as e:
+                    self.ErrorBox(str(e))
+            else:
+                self.ErrorBox('No file selected.')
+        else:
+            self.ExportCircuit(self.simplified_circuit)
+    
+    #ExportResults
 
+    def ExportCircuit(self, circuit):
+        if circuit is not None:
+            # get file path for pdf or png
+            file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', 'Documents/circuit.pdf', 'PDF Files (*.pdf);;PNG Files (*.png)')[0]
+            if file_path:
+                try:
+                    if file_path.endswith('.pdf'):
+                        # create temp file
+                        temp_file = NamedTemporaryFile(suffix='.pdf', delete=False).name
+                        circuit.draw(temp_file)
+                        copyfile(temp_file, file_path)
+                    elif file_path.endswith('.png'):
+                        # create temp file
+                        temp_file = NamedTemporaryFile(suffix='.png', delete=False).name
+                        circuit.draw(temp_file)
+                        copyfile(temp_file, file_path)
+                except Exception as e:
+                    self.ErrorBox(str(e))
+            else:
+                self.ErrorBox('No file selected.')
+        else:
+            self.ErrorBox('No circuit to export.')
 
     def ErrorBox(self, message):
         msg = QtWidgets.QMessageBox()
