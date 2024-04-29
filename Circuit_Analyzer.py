@@ -7,6 +7,7 @@ from Analysis_Methods.beginner_analysis import perform_beginner_analysis
 
 #image Conversion
 from Extra_Methods.ImageConverter import latex_to_png
+from Extra_Methods.NetlistConverter import remove_component_value
 
 # Lcapy Implementation
 from lcapy import *
@@ -106,38 +107,52 @@ def perform_analysis(circuit, analysis_type, result_filename=None):
 # Thevenin Analysis of a linear subcircuit with user defined nodes
 def perform_thevenin_analysis(circuit, png_filename=None):
     print("This analysis is used to find Thevenin equivalent values between a starting and an end node of a circuit.")
+    # Get no value circuit
+    empty_circuit = remove_component_value(circuit)
+    
     # Take input for start and end node
     startNode = input("Input start node as number: ")
     endNode = input("Input end node as number: ")
     thevenin = circuit.thevenin(startNode, endNode)
-    #thevenin.pprint()
+    thevenin_empty = empty_circuit.thevenin(startNode, endNode)
+    
+    # Draw evaluated thevenin network
     thevenin.draw()
-    #
-    #   NEEDS TO BE TESTED
-    #
-
-    # Generate LaTeX and PNG image of mesh equations
+    
+    # Generate LaTeX and PNG image of thevenin equations
     s = thevenin.latex()
     # The output of the system where G is representative of Conductance and I is representitive of the current source.
     latex_to_png(s, png_filename)
 
+    
+    # Generate LaTeX and PNG image of unevaluated thevenin equations
+    s = thevenin_empty.latex()
+    # The output of the system where G is representative of Conductance and I is representitive of the current source.
+    latex_to_png(s, png_filename)
+    
+
 # Norton Analysis of a linear subcircuit with user defined nodes
 def perform_norton_analysis(circuit, png_filename=None):
     print("This analysis is used to find Norton equivalent values between a starting and an end node of a circuit.")
+    # Get no value circuit
+    empty_circuit = remove_component_value(circuit)
+
     # Take input for start and end node
     startNode = input("Input start node as number: ")
     endNode = input("Input end node as number: ")
     try:
         norton = circuit.norton(startNode, endNode)
-        #norton.pprint()
+        norton_empty = empty_circuit.norton(startNode, endNode)
+
         norton.draw()
 
-        #
-        #   NEEDS TO BE TESTED
-        #
-
-        # Generate LaTeX and PNG image of mesh equations
+        # Generate LaTeX and PNG image of norton equations
         s = norton.latex()
+        # The output of the system where G is representative of Conductance and I is representitive of the current source.
+        latex_to_png(s, png_filename)
+
+        # Generate LaTeX and PNG image of unevaluated norton equations
+        s = norton_empty.latex()
         # The output of the system where G is representative of Conductance and I is representitive of the current source.
         latex_to_png(s, png_filename)
 
@@ -148,6 +163,7 @@ def perform_norton_analysis(circuit, png_filename=None):
 # Thevenin Transformation to norton equivalent using user defined voltage and resistance
 def perform_thevenin_transformation(circuit, png_filename=None):
     print("This function transforms a given Thevenin circuit to its Norton equivalent.")
+    
     # Take input for volatge and resistance
     v = input("Input voltage as number: ")
     r = input("Input resistance as number: ")
@@ -157,7 +173,7 @@ def perform_thevenin_transformation(circuit, png_filename=None):
     n.pprint()
     n.draw()
     
-    # Generate LaTeX and PNG image of mesh equations
+    # Generate LaTeX and PNG image of norton equations
     s = n.latex()
     # The output of the system where G is representative of Conductance and I is representitive of the current source.
 
@@ -176,7 +192,7 @@ def perform_norton_transformation(circuit, png_filename=None):
     T.pprint()
     T.draw()
 
-    # Generate LaTeX and PNG image of mesh equations
+    # Generate LaTeX and PNG image of thevenin equations
     s = T.latex()
     # The output of the system where R is representative of Resistance and V is representitive of the volatge source.
 
