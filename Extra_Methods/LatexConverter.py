@@ -26,5 +26,5 @@ def latexExpression(expr):
 # Helper function to return a component property and its unit in LaTeX
 def latexSingleTerm(term, unit):
     # Generate LaTeX string for a term and its unit
-    s = term.latex() + '\\:' + unit
+    s = term.latex() + '\\:' + units[unit]
     return s

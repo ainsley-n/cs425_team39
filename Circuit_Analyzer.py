@@ -39,6 +39,13 @@ def request_component_property(circuit):
     componentName = input("Enter the name of the component you want to solve for: ")
     componentProperty = input("Enter i or v for current or voltage: ")
     # Access component property dynamically
+    value = get_component_property(circuit, componentName, componentProperty)
+    value.pprint()
+
+def get_component_property(circuit, componentName, componentProperty):
+    # Print the netlist
+    # print(circuit.netlist())
+    # Access component property dynamically
     try:
         if (componentProperty == 'v'):
             return circuit[componentName].V(t)
@@ -50,24 +57,23 @@ def request_component_property(circuit):
         print(f"Error: Property '{componentProperty}' not found for component '{componentName}'.")
 
 def request_node_property(circuit):
-    # DC volt divider for beginners
-    circuit = Circuit("""
-    V 1 0 6; down=1.5
-    R1 1 2 2; right=1.5
-    R2 2 0_2 4; down
-    W 0 0_2; right""")
-    print(" * Circuit has been replaced for demonstartion.")
-    # Display voltage at noode 1
-    print("Node voltages can be displayed given the node. This is the voltage at node 1.")
-    circuit[1].v.pprint()
+    # Draw circuit
+    circuit.draw()
+    # Print Netlist
+    print(circuit.netlist())
+
     nodeIndex = input("Give the number of the node: ")
     print(nodeIndex)
     property = input("Give the desired property as v or i: ")
     print(property)
+    value = get_node_property(circuit, nodeIndex, property)
+    value.pprint()
+    
+def get_node_property(circuit, nodeIndex, property):
     if property == 'v' or 'V':
-        circuit[nodeIndex].v.pprint()
+        return circuit[nodeIndex].v
     else:
-        circuit[nodeIndex].i.pprint()
+        return circuit[nodeIndex].i
 
 # Dictionary for analysis by ainsley because this looks nicer and makes more sense
 analysis_functions = {
@@ -75,8 +81,8 @@ analysis_functions = {
     'Mesh analysis': lambda c,f=None: perform_mesh_analysis(c,f),
     'Nodal analysis': lambda c,f=None: perform_nodal_analysis(c,f),
     'Description': lambda c: c.description(),
-    'Thevenin Analysis': lambda c,f=None: perform_thevenin_analysis(c,f),
-    'Norton Analysis': lambda c,f=None: perform_norton_analysis(c,f),
+    'Thevenin Analysis': lambda c,f=None,e=None,start=None,end=None: perform_thevenin_analysis(c,f,e,start,end),
+    'Norton Analysis': lambda c,f=None,e=None,start=None,end=None: perform_norton_analysis(c,f,e,start,end),
     'Thevenin-Norton Transformation': lambda c,f=None: perform_thevenin_transformation(c,f),
     'Norton-Thevenin Transformation': lambda c,f=None: perform_norton_transformation(c,f),
     'State Space Analysis': lambda c: perform_state_space_analysis(c),
@@ -88,15 +94,15 @@ analysis_functions = {
 }
 
 # Call the desired analysis and handle invalid types
-def perform_analysis(circuit, analysis_type, result_filename=None):
+def perform_analysis(circuit, analysis_type, result_filename=None, *args, **kwargs):
     
     analysis_function = analysis_functions.get(analysis_type)
     
     if analysis_function:
         if result_filename:
-            return analysis_function(circuit, result_filename)
+            return analysis_function(circuit, result_filename, *args, **kwargs)
         else:
-            return analysis_function(circuit)
+            return analysis_function(circuit, *args, **kwargs)
     else:
         print("Invalid analysis type. Please choose a valid analysis type.")
         raise ValueError(f"Invalid analysis type: {analysis_type}")
@@ -105,60 +111,54 @@ def perform_analysis(circuit, analysis_type, result_filename=None):
 # State Space Analysis moved to separate file
 
 # Thevenin Analysis of a linear subcircuit with user defined nodes
-def perform_thevenin_analysis(circuit, png_filename=None):
+def perform_thevenin_analysis(circuit, simplified_circuit_filename=None, equation_filename=None, startNode=None, endNode=None):
     print("This analysis is used to find Thevenin equivalent values between a starting and an end node of a circuit.")
     # Get no value circuit
-    empty_circuit = remove_component_value(circuit)
+    empty_circuit_netlist = remove_component_value(circuit.netlist())
+    empty_circuit = Circuit(empty_circuit_netlist)
     
     # Take input for start and end node
-    startNode = input("Input start node as number: ")
-    endNode = input("Input end node as number: ")
+    if startNode is None:
+        startNode = input("Input start node as number: ")
+    if endNode is None:
+        endNode = input("Input end node as number: ")
     thevenin = circuit.thevenin(startNode, endNode)
     thevenin_empty = empty_circuit.thevenin(startNode, endNode)
     
     # Draw evaluated thevenin network
-    thevenin.draw()
-    
-    # Generate LaTeX and PNG image of thevenin equations
-    s = thevenin.latex()
-    # The output of the system where G is representative of Conductance and I is representitive of the current source.
-    latex_to_png(s, png_filename)
-
-    
+    thevenin.draw(simplified_circuit_filename)
+      
     # Generate LaTeX and PNG image of unevaluated thevenin equations
     s = thevenin_empty.latex()
     # The output of the system where G is representative of Conductance and I is representitive of the current source.
-    latex_to_png(s, png_filename)
+    if equation_filename is None:
+        equation_filename = 'temp/thevenin_equations.png'
+    return latex_to_png(s, equation_filename), thevenin
     
 
 # Norton Analysis of a linear subcircuit with user defined nodes
-def perform_norton_analysis(circuit, png_filename=None):
+def perform_norton_analysis(circuit, simplified_circuit_filename=None, equation_filename=None, startNode=None, endNode=None):
     print("This analysis is used to find Norton equivalent values between a starting and an end node of a circuit.")
     # Get no value circuit
-    empty_circuit = remove_component_value(circuit)
+    empty_circuit_netlist = remove_component_value(circuit.netlist())
+    empty_circuit = Circuit(empty_circuit_netlist)
 
     # Take input for start and end node
-    startNode = input("Input start node as number: ")
-    endNode = input("Input end node as number: ")
-    try:
-        norton = circuit.norton(startNode, endNode)
-        norton_empty = empty_circuit.norton(startNode, endNode)
+    if startNode is None:
+        startNode = input("Input start node as number: ")
+    if endNode is None:
+        endNode = input("Input end node as number: ")
+    norton = circuit.norton(startNode, endNode)
+    norton_empty = empty_circuit.norton(startNode, endNode)
 
-        norton.draw()
+    norton.draw(simplified_circuit_filename)
 
-        # Generate LaTeX and PNG image of norton equations
-        s = norton.latex()
-        # The output of the system where G is representative of Conductance and I is representitive of the current source.
-        latex_to_png(s, png_filename)
-
-        # Generate LaTeX and PNG image of unevaluated norton equations
-        s = norton_empty.latex()
-        # The output of the system where G is representative of Conductance and I is representitive of the current source.
-        latex_to_png(s, png_filename)
-
-    except ValueError as e:
-        print(f'Error: {e}')
-        print('Make sure ther is a DC path between all nodes, voltage sources are not short-circuited, and there are no loops of voltage sources.')
+    # Generate LaTeX and PNG image of unevaluated norton equations
+    s = norton_empty.latex()
+    # The output of the system where G is representative of Conductance and I is representitive of the current source.
+    if equation_filename is None:
+        equation_filename = 'temp/norton_equations.png'
+    return latex_to_png(s, equation_filename), norton
 
 # Thevenin Transformation to norton equivalent using user defined voltage and resistance
 def perform_thevenin_transformation(circuit, png_filename=None):
@@ -203,14 +203,17 @@ def perform_norton_transformation(circuit, png_filename=None):
 # circuit = create_circuit_from_file(file_path)
 
 # Main example circuit: Mesh, Nodal, Loop, Thevenin, Norton
-circuit = Circuit("""
-V1 1 0 6; down
-R1 1 2 5; right
-R2 2 3 10; right
-R4 2 0_2 7; down
-R3 3 0_3 6; down
-W 0 0_2; right
-W 0_2 0_3; right""")
+# circuit = Circuit("""
+# V1 1 0; down
+# R1 1 2; right
+# L1 2 3; right
+# R2 3 4; right
+# L2 2 0_2; down
+# C2 3 0_3; down
+# R3 4 0_4; down
+# W 0 0_2; right
+# W 0_2 0_3; right
+# W 0_3 0_4; right""")
 
 # Thevenin example circuit, nodes 2 & 0
 # circuit = Circuit("""
@@ -253,11 +256,11 @@ R_b 1 0""")'''
 # C1 5 6; right=2""")
 
 # DC volt divider for beginners
-# circuit = Circuit("""
-# V 1 0 6; down=1.5
-# R1 1 2 2; right=1.5
-# R2 2 0_2 4; down
-# W 0 0_2; right""")
+circuit = Circuit("""
+V 1 0 6; down=1.5
+R1 1 2 2; right=1.5
+R2 2 0_2 4; down
+W 0 0_2; right""")
 
 # Menu for analysis options
 def display_menu():
