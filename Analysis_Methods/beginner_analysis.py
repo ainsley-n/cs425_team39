@@ -24,6 +24,8 @@ def perform_beginner_analysis(png_filename=None):
     print("Node voltages can be displayed given the node. This is the voltage at node 1.")
     circuit[1].v.pprint()
     ###test####
+    if png_filename is None:
+        png_filename = 'temp/beginner_analysis_1.png'
     latex_to_png(latexSingleTerm(circuit[1].V(t), 'v'), png_filename)
     
     # Display voltage at node 2
@@ -37,6 +39,8 @@ def perform_beginner_analysis(png_filename=None):
     print("Component voltages can be displayed given the component name. This is the voltage at the voltage source.")
     circuit.V.v.pprint()
     ##test##
+    if png_filename is None:
+        png_filename = 'temp/beginner_analysis_2.png'
     latex_to_png(latexSingleTerm(circuit['V'].V(t), 'v'), png_filename)
 
     print("This is the voltage at resistor 1.")
@@ -53,16 +57,22 @@ def perform_beginner_analysis(png_filename=None):
     print("Component current can be displayed given the component name. This is the current at the voltage source.")
     circuit.V.i.pprint()
     ##test##
+    if png_filename is None:
+        png_filename = 'temp/beginner_analysis_3.png'
     latex_to_png(latexSingleTerm(circuit['V'].I(t), 'i'), png_filename)
 
     print("This is the current at resistor 1.")
     circuit.R1.i.pprint()
     ##test##
+    #if png_filename is None:
+    #    png_filename = 'temp/beginner_analysis_4.png'
     #latex_to_png(latexSingleTerm(circuit['R1'].I(t), 'i'), png_filename)
 
     print("This is the current at resistor 2.")
     circuit.R2.i.pprint()
     ##test##
+    #if png_filename is None:
+    #    png_filename = 'temp/beginner_analysis_5.png'
     #latex_to_png(latexSingleTerm(circuit['R2'].I(t), 'i'), png_filename)
 
     # Display AC circuit 
@@ -77,11 +87,15 @@ def perform_beginner_analysis(png_filename=None):
     print("AC components can be displayed the same as DC components. This is the voltage at the voltage source.")
     circuit.V.v.pprint()
     ##test##
+    if png_filename is None:
+        png_filename = 'temp/beginner_analysis_6.png'
     latex_to_png(latexSingleTerm(circuit['V'].V(t), 'v'), png_filename)
 
     print("This is the voltage at the resistor.")
     circuit.R.v.pprint()
     ##test##
+    if png_filename is None:
+        png_filename = 'temp/beginner_analysis_7.png'
     latex_to_png(latexSingleTerm(circuit['R'].V(t), 'v'), png_filename)
 
 

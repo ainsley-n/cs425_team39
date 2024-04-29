@@ -74,8 +74,8 @@ analysis_functions = {
     'Mesh analysis': lambda c,f=None: perform_mesh_analysis(c,f),
     'Nodal analysis': lambda c,f=None: perform_nodal_analysis(c,f),
     'Description': lambda c: c.description(),
-    'Thevenin Analysis': lambda c,f: perform_thevenin_analysis(c,f),
-    'Norton Analysis': lambda c,f: perform_norton_analysis(c,f),
+    'Thevenin Analysis': lambda c,f=None: perform_thevenin_analysis(c,f),
+    'Norton Analysis': lambda c,f=None: perform_norton_analysis(c,f),
     'Thevenin-Norton Transformation': lambda c,f=None: perform_thevenin_transformation(c,f),
     'Norton-Thevenin Transformation': lambda c,f=None: perform_norton_transformation(c,f),
     'State Space Analysis': lambda c: perform_state_space_analysis(c),
@@ -188,16 +188,13 @@ def perform_norton_transformation(circuit, png_filename=None):
 
 # Main example circuit: Mesh, Nodal, Loop, Thevenin, Norton
 circuit = Circuit("""
-V1 1 0; down
-R1 1 2; right
-L1 2 3; right
-R2 3 4; right
-L2 2 0_2; down
-C2 3 0_3; down
-R3 4 0_4; down
+V1 1 0 6; down
+R1 1 2 5; right
+R2 2 3 10; right
+R4 2 0_2 7; down
+R3 3 0_3 6; down
 W 0 0_2; right
-W 0_2 0_3; right
-W 0_3 0_4; right""")
+W 0_2 0_3; right""")
 
 # Thevenin example circuit, nodes 2 & 0
 # circuit = Circuit("""
