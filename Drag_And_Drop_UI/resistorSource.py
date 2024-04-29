@@ -11,10 +11,11 @@ class Resistor(Element):
     def increment_label_number(cls):
         cls.label_number += 1
 
-    def __init__(self, name, image_path, parent=None):
+    def __init__(self, name, image_path, is_clone = False, parent=None):
         pixmap = QtGui.QPixmap(image_path)
         scaled_pixmap = pixmap.scaled(60, 30)
         super().__init__(name, scaled_pixmap, parent)
+        self.is_clone = is_clone
         
         # Create a QGraphicsTextItem to display the name beneath the circle
         self.name_label = QtWidgets.QGraphicsTextItem("", self)
@@ -37,7 +38,7 @@ class Resistor(Element):
             
     def clone(self):
         # Create a new instance with the same properties
-        cloned_resistance = Resistor(self.name, self.pixmap())
+        cloned_resistance = Resistor(self.name, self.pixmap(), is_clone=True)
         cloned_resistance.init_nodes()
         
         # Check if there are deleted node labels to reuse
@@ -89,26 +90,27 @@ class Resistor(Element):
         # print(f'adding {self.label_number} to array')
         
     def mouseDoubleClickEvent(self, event):
-        # Get the scene
-        scene = self.scene()
-        if scene is None:
-            return
+        if self.is_clone:
+            # Get the scene
+            scene = self.scene()
+            if scene is None:
+                return
 
-        # Get the first view associated with the scene
-        view = scene.views()[0]
-        dialog = QtWidgets.QInputDialog(view)
-        dialog.setWindowTitle("Resistor")
-        dialog.setLabelText("Enter the Resistance:")
-        dialog.setOkButtonText("Set")
-        dialog.setCancelButtonText("Cancel")
-        dialog.setInputMode(QtWidgets.QInputDialog.DoubleInput)
-        dialog.setDoubleRange(0, 1000)  # Set the range for the voltage source power
-        dialog.setDoubleDecimals(2)  # Set the number of decimals
-        dialog.setDoubleValue(self.get_value())  # Set the initial value
+            # Get the first view associated with the scene
+            view = scene.views()[0]
+            dialog = QtWidgets.QInputDialog(view)
+            dialog.setWindowTitle("Resistor")
+            dialog.setLabelText("Enter the Resistance:")
+            dialog.setOkButtonText("Set")
+            dialog.setCancelButtonText("Cancel")
+            dialog.setInputMode(QtWidgets.QInputDialog.DoubleInput)
+            dialog.setDoubleRange(0, 1000)  # Set the range for the voltage source power
+            dialog.setDoubleDecimals(2)  # Set the number of decimals
+            dialog.setDoubleValue(self.get_value())  # Set the initial value
 
-        if dialog.exec_() == QtWidgets.QDialog.Accepted:
-            value = dialog.doubleValue()
-            self.set_value(value)
+            if dialog.exec_() == QtWidgets.QDialog.Accepted:
+                value = dialog.doubleValue()
+                self.set_value(value)
 
     def get_value(self):
         # Retrieve the current value of the voltage source
