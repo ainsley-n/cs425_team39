@@ -44,6 +44,7 @@ class AnalysisWindow(QtWidgets.QMainWindow):
         self.ui.backButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0))
         self.ui.switchResult.clicked.connect(controller.SwitchResult)
         self.ui.exportButton.clicked.connect(controller.ExportResults)
+        self.ui.homeButton.clicked.connect(controller.showHome)
         
 
 class Controller():
@@ -68,6 +69,10 @@ class Controller():
         self.analysisWindow.setStyleSheet(style)
         self.mainMenu.showMaximized()
     #__init__
+
+    def showHome(self):
+        self.analysisWindow.hide()
+        self.mainMenu.showMaximized()
 
     def OpenEditor(self):
         self.editor = drag_and_drop.MainWindow(drag_and_drop.Canvas())

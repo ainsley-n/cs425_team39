@@ -19,6 +19,14 @@ class Ui_AnalysisWindow(object):
         self.centralwidget.setObjectName("centralwidget")
         self.verticalLayout = QtWidgets.QVBoxLayout(self.centralwidget)
         self.verticalLayout.setObjectName("verticalLayout")
+        self.homeButton = QtWidgets.QPushButton(self.centralwidget)
+        sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sizePolicy.setHorizontalStretch(0)
+        sizePolicy.setVerticalStretch(0)
+        sizePolicy.setHeightForWidth(self.homeButton.sizePolicy().hasHeightForWidth())
+        self.homeButton.setSizePolicy(sizePolicy)
+        self.homeButton.setObjectName("homeButton")
+        self.verticalLayout.addWidget(self.homeButton, 0, QtCore.Qt.AlignLeft)
         self.CircuitImage = QtWidgets.QLabel(self.centralwidget)
         sizePolicy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Expanding)
         sizePolicy.setHorizontalStretch(0)
@@ -193,6 +201,7 @@ class Ui_AnalysisWindow(object):
     def retranslateUi(self, AnalysisWindow):
         _translate = QtCore.QCoreApplication.translate
         AnalysisWindow.setWindowTitle(_translate("AnalysisWindow", "Circuit Circus"))
+        self.homeButton.setText(_translate("AnalysisWindow", "Home"))
         self.CircuitImage.setText(_translate("AnalysisWindow", "CircuitImage"))
         self.RequestProperty.setText(_translate("AnalysisWindow", "Component and Node Properties"))
         self.NodeAnalysis.setText(_translate("AnalysisWindow", "Nodal Analysis"))
