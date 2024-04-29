@@ -42,6 +42,7 @@ class Controller():
     def __init__(self):
         self.file_path = ""
         self.circuit = None
+        self.circuit_image = None
         self.editor = drag_and_drop.MainWindow(drag_and_drop.Canvas())
                 
         styleFile = QtCore.QFile(os.path.join(dirname, 'GUI/style.qss'))
@@ -53,12 +54,16 @@ class Controller():
         self.analysisWindow = AnalysisWindow(self)
         self.analysisWindow.setStyleSheet(style)
         self.mainMenu.showMaximized()
+    #__init__
+
     def OpenEditor(self):
         self.editor = drag_and_drop.MainWindow(drag_and_drop.Canvas())
         self.editor.show()
+    #OpenEditor
+
     def OpenFile(self):
         new_file_path = QtWidgets.QFileDialog.getOpenFileName(None, 'Open File', '', 'All Files (*)')[0]
-        if new_file_path != '':
+        if new_file_path:
             try:
                 new_circuit = create_circuit_from_file(new_file_path)
             except FileNotFoundError:
@@ -68,6 +73,7 @@ class Controller():
                 msg.setInformativeText('File Does Not Exist')
                 msg.setWindowTitle("Error")
                 msg.exec_()
+                return
             except ValueError:
                 msg = QtWidgets.QMessageBox()
                 msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -75,23 +81,39 @@ class Controller():
                 msg.setInformativeText('File does not contain a netlist.\nTry again.')
                 msg.setWindowTitle("Error")
                 msg.exec_()
-            else:
-                self.file_path = new_file_path
-                self.circuit = new_circuit
+                return
 
-                temp_file = NamedTemporaryFile(suffix='.png', delete=False).name
-                self.circuit.draw(temp_file)
-                self.analysisWindow.ui.CircuitImage.setPixmap(QtGui.QPixmap(temp_file))
-                os.remove(temp_file)
-                self.analysisWindow.ui.stackedWidget.setCurrentIndex(0)
-                self.analysisWindow.showMaximized()
-                self.mainMenu.hide()
+            self.file_path = new_file_path
+            self.circuit = new_circuit
+
+            if self.circuit_image is None:
+                self.circuit_image = NamedTemporaryFile(suffix='.png', delete=False).name
+
+            try:
+                self.circuit.draw(self.circuit_image)
+            except Exception as e:
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Critical)
+                msg.setText("Error")
+                msg.setInformativeText(str(e))
+                msg.setWindowTitle("Error")
+                msg.exec_()
+                return
+
+            self.mainMenu.hide()
+            self.analysisWindow.ui.CircuitImage.setPixmap(QtGui.QPixmap(self.circuit_image))
+            self.analysisWindow.ui.stackedWidget.setCurrentIndex(0)
+            self.analysisWindow.showMaximized()
+    #OpenFile
+
     def SaveFile(self):
         new_file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', '', 'Text Files (*.txt);;All Files (*)')[0]
         if new_file_path:
             self.file_path = new_file_path
             with open(self.file_path, 'w') as file:
                 file.write(self.circuit.netlist())
+    #SaveFile
+
     def PerformAnalysis(self, analysis_type):
         if self.circuit:
             temp_file = NamedTemporaryFile(suffix='.png', delete=False).name
@@ -115,6 +137,7 @@ class Controller():
             msg.setInformativeText('No circuit loaded.\nPlease load a circuit.')
             msg.setWindowTitle("Error")
             msg.exec_()
+    #PerformAnalysis
         
     
 
