@@ -43,6 +43,7 @@ class Controller():
         self.file_path = ""
         self.circuit = None
         self.circuit_image = None
+        self.analysis_image = None
         self.editor = drag_and_drop.MainWindow(drag_and_drop.Canvas())
                 
         styleFile = QtCore.QFile(os.path.join(dirname, 'GUI/style.qss'))
@@ -115,10 +116,11 @@ class Controller():
     #SaveFile
 
     def PerformAnalysis(self, analysis_type):
-        if self.circuit:
-            temp_file = NamedTemporaryFile(suffix='.png', delete=False).name
+        if self.circuit is not None:
+            if self.analysis_image is None:
+                self.analysis_image = NamedTemporaryFile(suffix='.png', delete=False).name
             try:
-                perform_analysis(self.circuit, analysis_type, temp_file)
+                perform_analysis(self.circuit, analysis_type, self.analysis_image)
             except Exception as e:
                 msg = QtWidgets.QMessageBox()
                 msg.setIcon(QtWidgets.QMessageBox.Critical)
@@ -127,9 +129,8 @@ class Controller():
                 msg.setWindowTitle("Error")
                 msg.exec_()
             else:
-                self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(temp_file))
+                self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
-            os.remove(temp_file)
         else:
             msg = QtWidgets.QMessageBox()
             msg.setIcon(QtWidgets.QMessageBox.Critical)
