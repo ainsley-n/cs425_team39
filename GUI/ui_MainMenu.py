@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-# Form implementation generated from reading ui file 'NewGUI/MainMenu.ui'
+# Form implementation generated from reading ui file 'GUI/MainMenu.ui'
 #
 # Created by: PyQt5 UI code generator 5.15.10
 #
@@ -90,7 +90,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "Circuit Circus"))
-        self.label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:18pt;\">Welcome to Circuit Circus!<br />Previously known as Ultimate DC Circuit Analyzer</span></p></body></html>"))
+        self.label.setText(_translate("MainWindow", "<html><head/><body><p><span style=\" font-size:18pt;\">Welcome to Circuit Circus!</span></p><p><span style=\" font-size:12pt;\">Previously known as Ultimate DC Circuit Analyzer</span></p></body></html>"))
         self.newCircuit.setText(_translate("MainWindow", "Create New Circuit"))
         self.openCircuit.setText(_translate("MainWindow", "Open File"))
         self.generateCircuit.setText(_translate("MainWindow", "Generate Random Circuit"))
