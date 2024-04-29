@@ -56,16 +56,17 @@ def perform_nodal_analysis(circuit, png_filename=None):
 
     # LaTeX and PNG Output
     if png_filename is not None:
-        expr = circuit.laplace().nodal_analysis().nodal_equations()
-        s = '\\begin{tabular}{ll}\n'
+        expr = circuit.nodal_analysis().nodal_equations()
+        s = '\\renewcommand{\\arraystretch}{1.3}\n'
+        s += '\\begin{array}{ll}\n'
 
         for k, v in expr.items():
             if not isinstance(k, str):
                 k = k.latex()
 
-            s += '$' + k + '$: & $' + v.latex() + '$\\\\ \n'
+            s += k + ': & ' + v.latex() + '\\\\ \n'
 
-        s += '\\end{tabular}\n'
+        s += '\\end{array}\n'
 
         latex_to_png(s, png_filename)
 

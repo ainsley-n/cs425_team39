@@ -158,15 +158,16 @@ def perform_mesh_analysis(circuit, png_filename=None):
 
     # Generate LaTeX and PNG image of mesh equations
     if png_filename is not None:
-        expr = circuit.laplace().mesh_analysis().mesh_equations()
-        s = '\\begin{tabular}{ll}\n'
+        expr = circuit.mesh_analysis().mesh_equations()
+        s = '\\renewcommand{\\arraystretch}{1.3}\n'
+        s = '\\begin{array}{ll}\n'
 
         for k, v in expr.items():
             if not isinstance(k, str):
                 k = k.latex()
 
-            s += '$' + k + '$: & $' + v.latex() + '$\\\\ \n'
+            s += k + ': & ' + v.latex() + '\\\\ \n'
 
-        s += '\\end{tabular}\n'
+        s += '\\end{array}\n'
 
         latex_to_png(s, png_filename)
