@@ -37,9 +37,10 @@ class AnalysisWindow(QtWidgets.QMainWindow):
         self.ui.MeshAnalysis.clicked.connect(lambda: controller.PerformAnalysis('Mesh analysis'))
         self.ui.actionNodal.triggered.connect(lambda: controller.PerformAnalysis('Nodal analysis'))
         self.ui.NodeAnalysis.clicked.connect(lambda: controller.PerformAnalysis('Nodal analysis'))
-        self.ui.TheveninAnalysis.clicked.connect(lambda: controller.PerformTheveninAnalysis())
-        self.ui.NortonAnalysis.clicked.connect(lambda: controller.PerformNortonAnalysis())
+        self.ui.TheveninAnalysis.clicked.connect(controller.PerformTheveninAnalysis)
+        self.ui.NortonAnalysis.clicked.connect(controller.PerformNortonAnalysis)
         self.ui.backButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0))
+        self.ui.switchResult.clicked.connect(controller.SwitchResult)
         
 
 class Controller():
@@ -49,6 +50,7 @@ class Controller():
         self.circuit_image = None
         self.analysis_image = None
         self.simplified_circuit_image = None
+        self.simplified_circuit_showing = False
         self.editor = drag_and_drop.MainWindow(drag_and_drop.Canvas())
                 
         styleFile = QtCore.QFile(os.path.join(dirname, 'GUI/style.qss'))
@@ -116,6 +118,8 @@ class Controller():
             else:
                 self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
+                self.analysisWindow.ui.switchResult.hide()
+                self.simplified_circuit_showing = False
         else:
             self.ErrorBox('No circuit loaded.\nPlease load a circuit.')
     #PerformAnalysis
@@ -156,6 +160,8 @@ class Controller():
             else:
                 self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
+                self.analysisWindow.ui.switchResult.show()
+                self.analysisWindow.ui.switchResult.setText('Show Simplified Circuit')
         else:
             self.ErrorBox('No circuit loaded.\nPlease load a circuit.')
     #PerformNortonAnalysis
@@ -196,9 +202,21 @@ class Controller():
             else:
                 self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
+                self.analysisWindow.ui.switchResult.show()
+                self.analysisWindow.ui.switchResult.setText('Show Simplified Circuit')
         else:
             self.ErrorBox('No circuit loaded.\nPlease load a circuit.')
     #PerformTheveninAnalysis
+
+    def SwitchResult(self):
+        if not self.simplified_circuit_showing:
+            self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.simplified_circuit_image))
+            self.analysisWindow.ui.switchResult.setText('Show Symbolic Equations')
+            self.simplified_circuit_showing = True
+        else:
+            self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
+            self.analysisWindow.ui.switchResult.setText('Show Simplified Circuit')
+            self.simplified_circuit_showing = False
 
     def ErrorBox(self, message):
         msg = QtWidgets.QMessageBox()
