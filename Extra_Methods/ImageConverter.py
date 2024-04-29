@@ -18,6 +18,8 @@ def latex_to_png(s, png_filename):
     latexrunner.run(tex_filename)
 
     pdfconverter = PDFConverter()
+    if png_filename is None:
+        png_filename = "temp/temp.png"
     pdfconverter.to_png(pdf_filename, png_filename, dpi=300)
     latexrunner.cleanup(tex_filename)
 
