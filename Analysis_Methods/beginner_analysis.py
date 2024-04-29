@@ -1,7 +1,11 @@
 from lcapy import *
+from Extra_Methods.LatexConverter import latexSingleTerm
+from Extra_Methods.ImageConverter import latex_to_png
+
+#listed to test search '#test#'
 
 # Beginner Analysis for introducing new users
-def perform_beginner_analysis():
+def perform_beginner_analysis(png_filename=None):
     print("This analysis demonstrates the avalible functionalities and how they operate with different circuits.")
     
     # DC volt divider for beginners
@@ -19,25 +23,57 @@ def perform_beginner_analysis():
     # Display voltage at node 1
     print("Node voltages can be displayed given the node. This is the voltage at node 1.")
     circuit[1].v.pprint()
+    ###test####
+    if png_filename is None:
+        png_filename = 'temp/beginner_analysis_1.png'
+    latex_to_png(latexSingleTerm(circuit[1].V(t), 'v'), png_filename)
+    
     # Display voltage at node 2
     print("This is the voltage at node 2.")
-    circuit[1].v.pprint()
+    circuit[2].v.pprint()
+    ##test##
+    #latex_to_png(latexSingleTerm(circuit[2].V(t), 'v'), png_filename)
+
 
     # Display voltage accross each component
     print("Component voltages can be displayed given the component name. This is the voltage at the voltage source.")
     circuit.V.v.pprint()
+    ##test##
+    if png_filename is None:
+        png_filename = 'temp/beginner_analysis_2.png'
+    latex_to_png(latexSingleTerm(circuit['V'].V(t), 'v'), png_filename)
+
     print("This is the voltage at resistor 1.")
     circuit.R1.v.pprint()
+    ##test##
+    #latex_to_png(latexSingleTerm(circuit['R1'].V(t), 'v'), png_filename)
+
     print("This is the voltage at resistor 2.")
     circuit.R2.v.pprint()
+    ##test##
+    #latex_to_png(latexSingleTerm(circuit['R2'].V(t), 'v'), png_filename)
 
     # Display current accross each component
     print("Component current can be displayed given the component name. This is the current at the voltage source.")
     circuit.V.i.pprint()
+    ##test##
+    if png_filename is None:
+        png_filename = 'temp/beginner_analysis_3.png'
+    latex_to_png(latexSingleTerm(circuit['V'].I(t), 'i'), png_filename)
+
     print("This is the current at resistor 1.")
     circuit.R1.i.pprint()
+    ##test##
+    #if png_filename is None:
+    #    png_filename = 'temp/beginner_analysis_4.png'
+    #latex_to_png(latexSingleTerm(circuit['R1'].I(t), 'i'), png_filename)
+
     print("This is the current at resistor 2.")
     circuit.R2.i.pprint()
+    ##test##
+    #if png_filename is None:
+    #    png_filename = 'temp/beginner_analysis_5.png'
+    #latex_to_png(latexSingleTerm(circuit['R2'].I(t), 'i'), png_filename)
 
     # Display AC circuit 
     print("AC circuits can also be analyzed and drawn")
@@ -50,10 +86,19 @@ def perform_beginner_analysis():
 
     print("AC components can be displayed the same as DC components. This is the voltage at the voltage source.")
     circuit.V.v.pprint()
+    ##test##
+    if png_filename is None:
+        png_filename = 'temp/beginner_analysis_6.png'
+    latex_to_png(latexSingleTerm(circuit['V'].V(t), 'v'), png_filename)
 
     print("This is the voltage at the resistor.")
     circuit.R.v.pprint()
-    
+    ##test##
+    if png_filename is None:
+        png_filename = 'temp/beginner_analysis_7.png'
+    latex_to_png(latexSingleTerm(circuit['R'].V(t), 'v'), png_filename)
+
+
     print("This is a simplifed version of the voltage at the resistor.")
     circuit.R.v.simplify_sin_cos().pprint()
 

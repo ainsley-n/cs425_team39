@@ -5,11 +5,22 @@ from Analysis_Methods.state_analysis import perform_state_space_analysis
 from Analysis_Methods.plot_analysis import perform_plot_analysis
 from Analysis_Methods.beginner_analysis import perform_beginner_analysis
 
+#image Conversion
+from Extra_Methods.ImageConverter import latex_to_png
+from Extra_Methods.NetlistConverter import remove_component_value
+
 # Lcapy Implementation
 from lcapy import *
 from numpy import logspace
 
 from lcapy import state; state.current_sign_convention = 'passive'
+
+units = {
+    'v': 'V',
+    'i': 'A',
+    'r': 'R',
+    'c': 'G'
+}
 
 # Import an existing netlist 
 def create_circuit_from_file(file_path):
@@ -70,12 +81,12 @@ analysis_functions = {
     'Mesh analysis': lambda c,f=None: perform_mesh_analysis(c,f),
     'Nodal analysis': lambda c,f=None: perform_nodal_analysis(c,f),
     'Description': lambda c: c.description(),
-    'Thevenin Analysis': lambda c: perform_thevenin_analysis(c),
-    'Norton Analysis': lambda c: perform_norton_analysis(c),
-    'Thevenin-Norton Transformation': lambda c: perform_thevenin_transformation(c),
-    'Norton-Thevenin Transformation': lambda c: perform_norton_transformation(c),
+    'Thevenin Analysis': lambda c,f=None: perform_thevenin_analysis(c,f),
+    'Norton Analysis': lambda c,f=None: perform_norton_analysis(c,f),
+    'Thevenin-Norton Transformation': lambda c,f=None: perform_thevenin_transformation(c,f),
+    'Norton-Thevenin Transformation': lambda c,f=None: perform_norton_transformation(c,f),
     'State Space Analysis': lambda c: perform_state_space_analysis(c),
-    'For Beginners': lambda c: perform_beginner_analysis(),
+    'For Beginners': lambda f=None: perform_beginner_analysis(f),
     'Plotting': lambda c: perform_plot_analysis(),
     'Component Property': lambda c: request_component_property(c),
     'Node Property': lambda c: request_node_property(c),
@@ -100,32 +111,65 @@ def perform_analysis(circuit, analysis_type, result_filename=None):
 # State Space Analysis moved to separate file
 
 # Thevenin Analysis of a linear subcircuit with user defined nodes
-def perform_thevenin_analysis(circuit):
+def perform_thevenin_analysis(circuit, png_filename=None):
     print("This analysis is used to find Thevenin equivalent values between a starting and an end node of a circuit.")
+    # Get no value circuit
+    empty_circuit = remove_component_value(circuit)
+    
     # Take input for start and end node
     startNode = input("Input start node as number: ")
     endNode = input("Input end node as number: ")
     thevenin = circuit.thevenin(startNode, endNode)
-    #thevenin.pprint()
+    thevenin_empty = empty_circuit.thevenin(startNode, endNode)
+    
+    # Draw evaluated thevenin network
     thevenin.draw()
+    
+    # Generate LaTeX and PNG image of thevenin equations
+    s = thevenin.latex()
+    # The output of the system where G is representative of Conductance and I is representitive of the current source.
+    latex_to_png(s, png_filename)
+
+    
+    # Generate LaTeX and PNG image of unevaluated thevenin equations
+    s = thevenin_empty.latex()
+    # The output of the system where G is representative of Conductance and I is representitive of the current source.
+    latex_to_png(s, png_filename)
+    
 
 # Norton Analysis of a linear subcircuit with user defined nodes
-def perform_norton_analysis(circuit):
+def perform_norton_analysis(circuit, png_filename=None):
     print("This analysis is used to find Norton equivalent values between a starting and an end node of a circuit.")
+    # Get no value circuit
+    empty_circuit = remove_component_value(circuit)
+
     # Take input for start and end node
     startNode = input("Input start node as number: ")
     endNode = input("Input end node as number: ")
     try:
         norton = circuit.norton(startNode, endNode)
-        #norton.pprint()
+        norton_empty = empty_circuit.norton(startNode, endNode)
+
         norton.draw()
+
+        # Generate LaTeX and PNG image of norton equations
+        s = norton.latex()
+        # The output of the system where G is representative of Conductance and I is representitive of the current source.
+        latex_to_png(s, png_filename)
+
+        # Generate LaTeX and PNG image of unevaluated norton equations
+        s = norton_empty.latex()
+        # The output of the system where G is representative of Conductance and I is representitive of the current source.
+        latex_to_png(s, png_filename)
+
     except ValueError as e:
         print(f'Error: {e}')
         print('Make sure ther is a DC path between all nodes, voltage sources are not short-circuited, and there are no loops of voltage sources.')
 
 # Thevenin Transformation to norton equivalent using user defined voltage and resistance
-def perform_thevenin_transformation(circuit):
+def perform_thevenin_transformation(circuit, png_filename=None):
     print("This function transforms a given Thevenin circuit to its Norton equivalent.")
+    
     # Take input for volatge and resistance
     v = input("Input voltage as number: ")
     r = input("Input resistance as number: ")
@@ -134,9 +178,16 @@ def perform_thevenin_transformation(circuit):
     print("These are the new values and drawing for your Norton equivalent circuit.")
     n.pprint()
     n.draw()
+    
+    # Generate LaTeX and PNG image of norton equations
+    s = n.latex()
+    # The output of the system where G is representative of Conductance and I is representitive of the current source.
+
+    latex_to_png(s, png_filename)
+
 
 # Norton Transformation to thevenin equivalent using user defined current and resistance
-def perform_norton_transformation(circuit):
+def perform_norton_transformation(circuit, png_filename=None):
     print("This function transforms a given Norton circuit to its Thevenin equivalent.")
     # Take input for volatge and resistance
     i = input("Input current as number: ")
@@ -146,6 +197,12 @@ def perform_norton_transformation(circuit):
     print("These are the new values and drawing for your Thevenin equivalent circuit.")
     T.pprint()
     T.draw()
+
+    # Generate LaTeX and PNG image of thevenin equations
+    s = T.latex()
+    # The output of the system where R is representative of Resistance and V is representitive of the volatge source.
+
+    latex_to_png(s, png_filename)
 
 # Import netlist with pre-defined file path
 # file_path = 'D:/Circuit_Analyzer/testing/circuit.net'
