@@ -170,4 +170,4 @@ def perform_mesh_analysis(circuit, png_filename=None):
 
         s += '\\end{array}\n'
 
-        latex_to_png(s, png_filename)
+        return latex_to_png(s, png_filename)

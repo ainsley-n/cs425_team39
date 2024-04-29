@@ -133,7 +133,7 @@ def perform_thevenin_analysis(circuit, simplified_circuit_filename=None, equatio
     # The output of the system where G is representative of Conductance and I is representitive of the current source.
     if equation_filename is None:
         equation_filename = 'temp/thevenin_equations.png'
-    latex_to_png(s, equation_filename)
+    return latex_to_png(s, equation_filename), thevenin
     
 
 # Norton Analysis of a linear subcircuit with user defined nodes
@@ -158,7 +158,7 @@ def perform_norton_analysis(circuit, simplified_circuit_filename=None, equation_
     # The output of the system where G is representative of Conductance and I is representitive of the current source.
     if equation_filename is None:
         equation_filename = 'temp/norton_equations.png'
-    latex_to_png(s, equation_filename)
+    return latex_to_png(s, equation_filename), norton
 
 # Thevenin Transformation to norton equivalent using user defined voltage and resistance
 def perform_thevenin_transformation(circuit, png_filename=None):

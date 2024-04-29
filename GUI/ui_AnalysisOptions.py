@@ -198,7 +198,7 @@ class Ui_AnalysisWindow(object):
         self.NodeAnalysis.setText(_translate("AnalysisWindow", "Nodal Analysis"))
         self.MeshAnalysis.setText(_translate("AnalysisWindow", "Mesh Analysis"))
         self.TheveninAnalysis.setText(_translate("AnalysisWindow", "Thevenin Analysis"))
-        self.StateSpaceAnalysis.setText(_translate("AnalysisWindow", "State-Space Analysis"))
+        self.StateSpaceAnalysis.setText(_translate("AnalysisWindow", "Export Circuit"))
         self.NortonAnalysis.setText(_translate("AnalysisWindow", "Norton Analysis"))
         self.SolutionImage.setText(_translate("AnalysisWindow", "SolutionImage"))
         self.backButton.setText(_translate("AnalysisWindow", "Back"))

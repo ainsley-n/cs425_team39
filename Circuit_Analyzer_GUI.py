@@ -49,6 +49,8 @@ class Controller():
         self.circuit = None
         self.circuit_image = None
         self.analysis_image = None
+        self.analysis_pdf = None
+        self.simplified_circuit = None
         self.simplified_circuit_image = None
         self.simplified_circuit_showing = False
         self.editor = drag_and_drop.MainWindow(drag_and_drop.Canvas())
@@ -100,7 +102,7 @@ class Controller():
     #OpenFile
 
     def SaveFile(self):
-        new_file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', '', 'Text Files (*.txt);;All Files (*)')[0]
+        new_file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', 'Documents/circuit.txt', 'Text Files (*.txt);;All Files (*)')[0]
         if new_file_path:
             self.file_path = new_file_path
             with open(self.file_path, 'w') as file:
@@ -112,7 +114,7 @@ class Controller():
             if self.analysis_image is None:
                 self.analysis_image = NamedTemporaryFile(suffix='.png', delete=False).name
             try:
-                perform_analysis(self.circuit, analysis_type, self.analysis_image)
+                self.analysis_pdf = perform_analysis(self.circuit, analysis_type, self.analysis_image)
             except Exception as e:
                 self.ErrorBox(str(e))
             else:
@@ -154,7 +156,7 @@ class Controller():
                 return
             
             try:
-                perform_norton_analysis(self.circuit, self.simplified_circuit_image, self.analysis_image, start_node, end_node)
+                self.analysis_pdf, self.simplified_circuit = perform_norton_analysis(self.circuit, self.simplified_circuit_image, self.analysis_image, start_node, end_node)
             except Exception as e:
                 self.ErrorBox(str(e))
             else:
@@ -196,7 +198,7 @@ class Controller():
                 return
             
             try:
-                perform_thevenin_analysis(self.circuit, self.simplified_circuit_image, self.analysis_image, start_node, end_node)
+                self.analysis_pdf, self.simplified_circuit = perform_thevenin_analysis(self.circuit, self.simplified_circuit_image, self.analysis_image, start_node, end_node)
             except Exception as e:
                 self.ErrorBox(str(e))
             else:
@@ -217,6 +219,9 @@ class Controller():
             self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
             self.analysisWindow.ui.switchResult.setText('Show Simplified Circuit')
             self.simplified_circuit_showing = False
+    #SwitchResult
+
+
 
     def ErrorBox(self, message):
         msg = QtWidgets.QMessageBox()

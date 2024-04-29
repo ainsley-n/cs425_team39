@@ -113,7 +113,7 @@
              </sizepolicy>
             </property>
             <property name="text">
-             <string>State-Space Analysis</string>
+             <string>Export Circuit</string>
             </property>
            </widget>
           </item>
