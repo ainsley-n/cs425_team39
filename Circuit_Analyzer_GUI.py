@@ -9,6 +9,8 @@ from Drag_And_Drop_UI import drag_and_drop
 
 from Circuit_Analyzer import create_circuit_from_file
 from Circuit_Analyzer import perform_analysis
+from Circuit_Analyzer import perform_norton_analysis
+from Circuit_Analyzer import perform_thevenin_analysis
 from lcapy import Circuit
 
 dirname = os.path.dirname(__file__)
@@ -35,6 +37,8 @@ class AnalysisWindow(QtWidgets.QMainWindow):
         self.ui.MeshAnalysis.clicked.connect(lambda: controller.PerformAnalysis('Mesh analysis'))
         self.ui.actionNodal.triggered.connect(lambda: controller.PerformAnalysis('Nodal analysis'))
         self.ui.NodeAnalysis.clicked.connect(lambda: controller.PerformAnalysis('Nodal analysis'))
+        #self.ui.TheveninAnalysis.clicked.connect(lambda: controller.PerformTheveninAnalysis())
+        self.ui.NortonAnalysis.clicked.connect(lambda: controller.PerformNortonAnalysis())
         self.ui.backButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0))
         
 
@@ -44,6 +48,7 @@ class Controller():
         self.circuit = None
         self.circuit_image = None
         self.analysis_image = None
+        self.simplified_circuit_image = None
         self.editor = drag_and_drop.MainWindow(drag_and_drop.Canvas())
                 
         styleFile = QtCore.QFile(os.path.join(dirname, 'GUI/style.qss'))
@@ -140,7 +145,125 @@ class Controller():
             msg.exec_()
     #PerformAnalysis
         
-    
+    def PerformNortonAnalysis(self):
+        if self.circuit is not None:
+            if self.analysis_image is None:
+                self.analysis_image = NamedTemporaryFile(suffix='.png', delete=False).name
+            if self.simplified_circuit_image is None:
+                self.simplified_circuit_image = NamedTemporaryFile(suffix='.png', delete=False).name
+
+            # Get user input for start and end nodes
+            # get list of nodes
+            try:
+                nodes = self.circuit.nodes
+                node_list = list(nodes.keys())
+                node_list = sorted([node for node in node_list if node.isnumeric()], key=int)
+            except Exception as e:
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Critical)
+                msg.setText("Error")
+                msg.setInformativeText(str(e))
+                msg.setWindowTitle("Error")
+                msg.exec_()
+                return
+            
+            # get user input
+            start_node, okPressed = QtWidgets.QInputDialog.getItem(None, "Get start node","Start Node:", node_list, 0, False)
+            if not okPressed:
+                return
+            node_list.remove(start_node)
+            end_node, okPressed = QtWidgets.QInputDialog.getItem(None, "Get end node","End Node:", node_list, 0, False)
+            if not okPressed:
+                return
+            if start_node == end_node:
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Critical)
+                msg.setText("Error")
+                msg.setInformativeText('Start and end nodes cannot be the same.\nPlease try again.')
+                msg.setWindowTitle("Error")
+                msg.exec_()
+                return
+            
+            try:
+                perform_norton_analysis(self.circuit, self.simplified_circuit_image, self.analysis_image, start_node, end_node)
+            except Exception as e:
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Critical)
+                msg.setText("Error")
+                msg.setInformativeText(str(e))
+                msg.setWindowTitle("Error")
+                msg.exec_()
+            else:
+                self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
+                self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
+        else:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setInformativeText('No circuit loaded.\nPlease load a circuit.')
+            msg.setWindowTitle("Error")
+            msg.exec_()
+    #PerformNortonAnalysis
+
+    def PerformTheveninAnalysis(self):
+        if self.circuit is not None:
+            if self.analysis_image is None:
+                self.analysis_image = NamedTemporaryFile(suffix='.png', delete=False).name
+            if self.simplified_circuit_image is None:
+                self.simplified_circuit_image = NamedTemporaryFile(suffix='.png', delete=False).name
+
+            # Get user input for start and end nodes
+            # get list of nodes
+            try:
+                nodes = self.circuit.nodes
+                node_list = list(nodes.keys())
+                node_list = sorted([node for node in node_list if node.isnumeric()], key=int)
+            except Exception as e:
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Critical)
+                msg.setText("Error")
+                msg.setInformativeText(str(e))
+                msg.setWindowTitle("Error")
+                msg.exec_()
+                return
+            
+            # get user input
+            start_node, okPressed = QtWidgets.QInputDialog.getItem(None, "Get start node","Start Node:", node_list, 0, False)
+            if not okPressed:
+                return
+            node_list.remove(start_node)
+            end_node, okPressed = QtWidgets.QInputDialog.getItem(None, "Get end node","End Node:", node_list, 0, False)
+            if not okPressed:
+                return
+            if start_node == end_node:
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Critical)
+                msg.setText("Error")
+                msg.setInformativeText('Start and end nodes cannot be the same.\nPlease try again.')
+                msg.setWindowTitle("Error")
+                msg.exec_()
+                return
+            
+            try:
+                perform_thevenin_analysis(self.circuit, self.simplified_circuit_image, self.analysis_image, start_node, end_node)
+            except Exception as e:
+                msg = QtWidgets.QMessageBox()
+                msg.setIcon(QtWidgets.QMessageBox.Critical)
+                msg.setText("Error")
+                msg.setInformativeText(str(e))
+                msg.setWindowTitle("Error")
+                msg.exec_()
+            else:
+                self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
+                self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
+        else:
+            msg = QtWidgets.QMessageBox()
+            msg.setIcon(QtWidgets.QMessageBox.Critical)
+            msg.setText("Error")
+            msg.setInformativeText('No circuit loaded.\nPlease load a circuit.')
+            msg.setWindowTitle("Error")
+            msg.exec_()
+    #PerformTheveninAnalysis
 
 
 
