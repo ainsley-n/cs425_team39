@@ -28,6 +28,13 @@ def request_component_property(circuit):
     componentName = input("Enter the name of the component you want to solve for: ")
     componentProperty = input("Enter i or v for current or voltage: ")
     # Access component property dynamically
+    value = get_component_property(circuit, componentName, componentProperty)
+    value.pprint()
+
+def get_component_property(circuit, componentName, componentProperty):
+    # Print the netlist
+    # print(circuit.netlist())
+    # Access component property dynamically
     try:
         if (componentProperty == 'v'):
             return circuit[componentName].V(t)
@@ -39,24 +46,23 @@ def request_component_property(circuit):
         print(f"Error: Property '{componentProperty}' not found for component '{componentName}'.")
 
 def request_node_property(circuit):
-    # DC volt divider for beginners
-    circuit = Circuit("""
-    V 1 0 6; down=1.5
-    R1 1 2 2; right=1.5
-    R2 2 0_2 4; down
-    W 0 0_2; right""")
-    print(" * Circuit has been replaced for demonstartion.")
-    # Display voltage at noode 1
-    print("Node voltages can be displayed given the node. This is the voltage at node 1.")
-    circuit[1].v.pprint()
+    # Draw circuit
+    circuit.draw()
+    # Print Netlist
+    print(circuit.netlist())
+
     nodeIndex = input("Give the number of the node: ")
     print(nodeIndex)
     property = input("Give the desired property as v or i: ")
     print(property)
+    value = get_node_property(circuit, nodeIndex, property)
+    value.pprint()
+    
+def get_node_property(circuit, nodeIndex, property):
     if property == 'v' or 'V':
-        circuit[nodeIndex].v.pprint()
+        return circuit[nodeIndex].v
     else:
-        circuit[nodeIndex].i.pprint()
+        return circuit[nodeIndex].i
 
 # Dictionary for analysis by ainsley because this looks nicer and makes more sense
 analysis_functions = {
@@ -146,17 +152,17 @@ def perform_norton_transformation(circuit):
 # circuit = create_circuit_from_file(file_path)
 
 # Main example circuit: Mesh, Nodal, Loop, Thevenin, Norton
-circuit = Circuit("""
-V1 1 0; down
-R1 1 2; right
-L1 2 3; right
-R2 3 4; right
-L2 2 0_2; down
-C2 3 0_3; down
-R3 4 0_4; down
-W 0 0_2; right
-W 0_2 0_3; right
-W 0_3 0_4; right""")
+# circuit = Circuit("""
+# V1 1 0; down
+# R1 1 2; right
+# L1 2 3; right
+# R2 3 4; right
+# L2 2 0_2; down
+# C2 3 0_3; down
+# R3 4 0_4; down
+# W 0 0_2; right
+# W 0_2 0_3; right
+# W 0_3 0_4; right""")
 
 # Thevenin example circuit, nodes 2 & 0
 # circuit = Circuit("""
@@ -199,11 +205,11 @@ R_b 1 0""")'''
 # C1 5 6; right=2""")
 
 # DC volt divider for beginners
-# circuit = Circuit("""
-# V 1 0 6; down=1.5
-# R1 1 2 2; right=1.5
-# R2 2 0_2 4; down
-# W 0 0_2; right""")
+circuit = Circuit("""
+V 1 0 6; down=1.5
+R1 1 2 2; right=1.5
+R2 2 0_2 4; down
+W 0 0_2; right""")
 
 # Menu for analysis options
 def display_menu():
