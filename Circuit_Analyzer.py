@@ -81,8 +81,8 @@ analysis_functions = {
     'Mesh analysis': lambda c,f=None: perform_mesh_analysis(c,f),
     'Nodal analysis': lambda c,f=None: perform_nodal_analysis(c,f),
     'Description': lambda c: c.description(),
-    'Thevenin Analysis': lambda c,f=None: perform_thevenin_analysis(c,f),
-    'Norton Analysis': lambda c,f=None: perform_norton_analysis(c,f),
+    'Thevenin Analysis': lambda c,f=None,e=None,start=None,end=None: perform_thevenin_analysis(c,f,e,start,end),
+    'Norton Analysis': lambda c,f=None,e=None,start=None,end=None: perform_norton_analysis(c,f,e,start,end),
     'Thevenin-Norton Transformation': lambda c,f=None: perform_thevenin_transformation(c,f),
     'Norton-Thevenin Transformation': lambda c,f=None: perform_norton_transformation(c,f),
     'State Space Analysis': lambda c: perform_state_space_analysis(c),
@@ -94,15 +94,15 @@ analysis_functions = {
 }
 
 # Call the desired analysis and handle invalid types
-def perform_analysis(circuit, analysis_type, result_filename=None):
+def perform_analysis(circuit, analysis_type, result_filename=None, *args, **kwargs):
     
     analysis_function = analysis_functions.get(analysis_type)
     
     if analysis_function:
         if result_filename:
-            return analysis_function(circuit, result_filename)
+            return analysis_function(circuit, result_filename, *args, **kwargs)
         else:
-            return analysis_function(circuit)
+            return analysis_function(circuit, *args, **kwargs)
     else:
         print("Invalid analysis type. Please choose a valid analysis type.")
         raise ValueError(f"Invalid analysis type: {analysis_type}")
@@ -111,60 +111,54 @@ def perform_analysis(circuit, analysis_type, result_filename=None):
 # State Space Analysis moved to separate file
 
 # Thevenin Analysis of a linear subcircuit with user defined nodes
-def perform_thevenin_analysis(circuit, png_filename=None):
+def perform_thevenin_analysis(circuit, simplified_circuit_filename=None, equation_filename=None, startNode=None, endNode=None):
     print("This analysis is used to find Thevenin equivalent values between a starting and an end node of a circuit.")
     # Get no value circuit
-    empty_circuit = remove_component_value(circuit)
+    empty_circuit_netlist = remove_component_value(circuit.netlist())
+    empty_circuit = Circuit(empty_circuit_netlist)
     
     # Take input for start and end node
-    startNode = input("Input start node as number: ")
-    endNode = input("Input end node as number: ")
+    if startNode is None:
+        startNode = input("Input start node as number: ")
+    if endNode is None:
+        endNode = input("Input end node as number: ")
     thevenin = circuit.thevenin(startNode, endNode)
     thevenin_empty = empty_circuit.thevenin(startNode, endNode)
     
     # Draw evaluated thevenin network
-    thevenin.draw()
-    
-    # Generate LaTeX and PNG image of thevenin equations
-    s = thevenin.latex()
-    # The output of the system where G is representative of Conductance and I is representitive of the current source.
-    latex_to_png(s, png_filename)
-
-    
+    thevenin.draw(simplified_circuit_filename)
+      
     # Generate LaTeX and PNG image of unevaluated thevenin equations
     s = thevenin_empty.latex()
     # The output of the system where G is representative of Conductance and I is representitive of the current source.
-    latex_to_png(s, png_filename)
+    if equation_filename is None:
+        equation_filename = 'temp/thevenin_equations.png'
+    latex_to_png(s, equation_filename)
     
 
 # Norton Analysis of a linear subcircuit with user defined nodes
-def perform_norton_analysis(circuit, png_filename=None):
+def perform_norton_analysis(circuit, simplified_circuit_filename=None, equation_filename=None, startNode=None, endNode=None):
     print("This analysis is used to find Norton equivalent values between a starting and an end node of a circuit.")
     # Get no value circuit
-    empty_circuit = remove_component_value(circuit)
+    empty_circuit_netlist = remove_component_value(circuit.netlist())
+    empty_circuit = Circuit(empty_circuit_netlist)
 
     # Take input for start and end node
-    startNode = input("Input start node as number: ")
-    endNode = input("Input end node as number: ")
-    try:
-        norton = circuit.norton(startNode, endNode)
-        norton_empty = empty_circuit.norton(startNode, endNode)
+    if startNode is None:
+        startNode = input("Input start node as number: ")
+    if endNode is None:
+        endNode = input("Input end node as number: ")
+    norton = circuit.norton(startNode, endNode)
+    norton_empty = empty_circuit.norton(startNode, endNode)
 
-        norton.draw()
+    norton.draw(simplified_circuit_filename)
 
-        # Generate LaTeX and PNG image of norton equations
-        s = norton.latex()
-        # The output of the system where G is representative of Conductance and I is representitive of the current source.
-        latex_to_png(s, png_filename)
-
-        # Generate LaTeX and PNG image of unevaluated norton equations
-        s = norton_empty.latex()
-        # The output of the system where G is representative of Conductance and I is representitive of the current source.
-        latex_to_png(s, png_filename)
-
-    except ValueError as e:
-        print(f'Error: {e}')
-        print('Make sure ther is a DC path between all nodes, voltage sources are not short-circuited, and there are no loops of voltage sources.')
+    # Generate LaTeX and PNG image of unevaluated norton equations
+    s = norton_empty.latex()
+    # The output of the system where G is representative of Conductance and I is representitive of the current source.
+    if equation_filename is None:
+        equation_filename = 'temp/norton_equations.png'
+    latex_to_png(s, equation_filename)
 
 # Thevenin Transformation to norton equivalent using user defined voltage and resistance
 def perform_thevenin_transformation(circuit, png_filename=None):
