@@ -33,7 +33,7 @@ class Canvas(QtWidgets.QGraphicsView):
         scene_rect = self.sceneRect()
         canvas_width = scene_rect.width()
         canvas_height = scene_rect.height()
-        print(f"Canvas Width: {canvas_width}, Canvas Height: {canvas_height}")
+        # print(f"Canvas Width: {canvas_width}, Canvas Height: {canvas_height}")
         
         
     def keyPressEvent(self, event):
@@ -144,7 +144,7 @@ class Canvas(QtWidgets.QGraphicsView):
                 circular_elements = [element for element in elements if isinstance(element, CircularElement)]
                 printed_circular_connections  = set()
                 for circular_element in circular_elements:
-                    print(f'circular_element: {circular_element.name_label.toPlainText()}')
+                    # print(f'circular_element: {circular_element.name_label.toPlainText()}')
                     connected_circular_elements = []
                     name = circular_element.name_label.toPlainText()
                     # print(f"Checking connections for circular element {name}:")
@@ -162,7 +162,7 @@ class Canvas(QtWidgets.QGraphicsView):
                             circular_connection = tuple(sorted([name, connected_element.name_label.toPlainText()]))
                             # Check if the circular connection has already been printed
                             if circular_connection not in printed_circular_connections:
-                                print(f'connection {circular_connection[0], circular_connection[1]}')
+                                # print(f'connection {circular_connection[0], circular_connection[1]}')
                                 # Calculate direction based on relative positions of nodes
                                 # Find nodes corresponding to the circular connection
                                 name1 = connected_element.name_label.toPlainText()
@@ -172,15 +172,15 @@ class Canvas(QtWidgets.QGraphicsView):
                                 node1_pos = None
                                 node2_pos = None
                                 for node in circular_element.nodes:
-                                    print(f'name1: {name1}\nname2: {name2}\nconnection0: {circular_connection[0]}\nconnection1: {circular_connection[1]}')
+                                    # print(f'name1: {name1}\nname2: {name2}\nconnection0: {circular_connection[0]}\nconnection1: {circular_connection[1]}')
                                     if  name1 == circular_connection[0]:
                                         # print(f'node 1 = {name1}')
                                         node1_pos = self.get_node_positions_by_name(connected_element, name1)
-                                        print(f'node1_pos {node1_pos}')
+                                        # print(f'node1_pos {node1_pos}')
                                     if name2 == circular_connection[1]:
                                         # print(f'node 2 = {name2}')
                                         node2_pos = self.get_node_positions_by_name(circular_element, name2)
-                                        print(f'node2_pos {node2_pos}')
+                                        # print(f'node2_pos {node2_pos}')
                                 # Ensure both nodes are found before proceeding
                                 if node1_pos is not None and node2_pos is not None:
                                     # Calculate direction based on relative positions of nodes
@@ -190,7 +190,7 @@ class Canvas(QtWidgets.QGraphicsView):
                                         direction = 'right' if dx > 0 else 'left'
                                     else:
                                         direction = 'down' if dy > 0 else 'up'
-                                    print(f'Direction: {direction}')
+                                    # print(f'Direction: {direction}')
                                     # Write the connection to file
                                     file.write(f'W {circular_connection[0]} {circular_connection[1]}; {direction}\n')
                                 # else:
@@ -203,13 +203,13 @@ class Canvas(QtWidgets.QGraphicsView):
                         print(f"Error: More than three nodes connected together.")
 
     def get_node_positions_by_name(self, element, target_name):
-        print(f"Searching for {target_name} in element {element.name_label.toPlainText()}")
+        # print(f"Searching for {target_name} in element {element.name_label.toPlainText()}")
         for node in element.nodes:
-            print(f"Node in {element.name_label.toPlainText()}: Checking if {element.name_label.toPlainText()} == {target_name}")
+            # print(f"Node in {element.name_label.toPlainText()}: Checking if {element.name_label.toPlainText()} == {target_name}")
             if element.name_label.toPlainText().strip() == target_name.strip():
-                print(f"Node position found for {target_name} in {element.name_label.toPlainText()}: {node.scenePos()}")
+                # print(f"Node position found for {target_name} in {element.name_label.toPlainText()}: {node.scenePos()}")
                 return node.scenePos()
-        print(f"No node found for {target_name} in {element.name_label.toPlainText()}")
+        # print(f"No node found for {target_name} in {element.name_label.toPlainText()}")
         return None
 
 
