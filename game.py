@@ -2,13 +2,17 @@ from lcapy import *
 from lcapy import Circuit
 from lcapy.system import tmpfilename, LatexRunner, PDFConverter
 from lcapy import state; state.current_sign_convention = 'passive'
+from Extra_Methods.NetlistConverter import remove_component_value
 
 units = {
     'v': 'V',
     'i': 'A',
+    'r': 'R',
+    'c': 'G'
 }
 
-def game_loop():
+
+def game_loop(circuit):
     # DC volt divider for beginners
     circuit = Circuit("""
     V 1 0 6; down=1.5
@@ -16,8 +20,10 @@ def game_loop():
     R2 2 0_2 4; down
     W 0 0_2; right""")
 
+    empty_circuit = remove_component_value(circuit)
+
     while True:
-        #print("\n\nWelcome to the Circuit Solver Game!")
+        print("\n\nWelcome to the Circuit Solver Game!")
         print("Choose an option:")
         print("1. Solve Circuit")
         print("2. Exit")
@@ -27,28 +33,26 @@ def game_loop():
         if choice == '1':
 
             # Draw circuit 
-            circuit.draw()
+            empty_circuit.draw()
 
             # Print Netlist
-            print(circuit.netlist())
+            print(empty_circuit.netlist())
             component_name = input("Enter the name of the component you want to solve for: ")
             component_property = input("Enter i or v for current or voltage: ")
 
             # Assuming you have a function to solve for a specific component in Time Domain representation
             solution = request_component_property(circuit, component_name, component_property)
             unit = units[component_property]
-            print("Testing Solution:", solution, "Pprint Solu:")
-            solution.pprint()
-            #solution.latex()
+            
             latexPrint(solution, unit)
-            #userAnswer = input("What is the value of the property for the component? ")
+            userAnswer = input("What is the value of the property for the component? ")
 
             # Check if user answer is correct
-            #if (solution==int(userAnswer)):
-                #print("Congratulations! You solved it.")
-            print("Solution:", solution)
-            #else:
-                #print("Sorry, that's not correct. Try again!")
+            if (solution==int(userAnswer)):
+                print("Congratulations! You solved it.")
+                latexPrint(solution, unit)
+            else:
+                print("Sorry, that's not correct. Try again!")
         elif choice == '2':
             print("Exiting the game. Goodbye!")
             break
@@ -56,9 +60,6 @@ def game_loop():
             print("Invalid choice. Please enter 1 or 2.")
 
 def request_component_property(circuit, componentName, componentProperty):
-    # Print the netlist
-    # print(circuit.netlist())
-    # Access component property dynamically
     try:
         if (componentProperty == 'v'):
             return circuit[componentName].V(t)
@@ -95,4 +96,4 @@ def latexPrint(solu, unit):
     return png_filename
 
 if __name__ == '__main__':
-    game_loop()
+    game_loop(circuit)
