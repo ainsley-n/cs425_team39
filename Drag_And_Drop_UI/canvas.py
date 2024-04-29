@@ -143,8 +143,8 @@ class Canvas(QtWidgets.QGraphicsView):
                 # Check if circular elements are next to eachother    
                 circular_elements = [element for element in elements if isinstance(element, CircularElement)]
                 printed_circular_connections  = set()
-                
                 for circular_element in circular_elements:
+                    print(f'circular_element: {circular_element.name_label.toPlainText()}')
                     connected_circular_elements = []
                     name = circular_element.name_label.toPlainText()
                     # print(f"Checking connections for circular element {name}:")
@@ -154,7 +154,7 @@ class Canvas(QtWidgets.QGraphicsView):
                             other_element = other_node.parentItem()
                             if isinstance(other_element, CircularElement):
                                 connected_circular_elements.append(other_element)
-                                
+                              
                     # print(f"Found {len(connected_circular_elements)} connected circular elements.")
                     if connected_circular_elements:
                         for connected_element in connected_circular_elements:
@@ -162,35 +162,56 @@ class Canvas(QtWidgets.QGraphicsView):
                             circular_connection = tuple(sorted([name, connected_element.name_label.toPlainText()]))
                             # Check if the circular connection has already been printed
                             if circular_connection not in printed_circular_connections:
+                                print(f'connection {circular_connection[0], circular_connection[1]}')
                                 # Calculate direction based on relative positions of nodes
+                                # Find nodes corresponding to the circular connection
+                                name1 = connected_element.name_label.toPlainText()
+                                name2 = name
+                                # print(f'name1 {name1}')
+                                # print(f'name2 {name2}')
+                                node1_pos = None
+                                node2_pos = None
                                 for node in circular_element.nodes:
-                                    for wire in node.connected_wires():
-                                        other_node = wire.start_node if wire.end_node == node else wire.end_node
-                                        other_element = other_node.parentItem()
-                                        if isinstance(other_element, CircularElement) and other_element in connected_circular_elements:
-                                            dx = other_node.scenePos().x() - node.scenePos().x()
-                                            dy = other_node.scenePos().y() - node.scenePos().y()
-                                            if abs(dx) > abs(dy):
-                                                direction = 'right' if dx > 0 else 'left'
-                                            else:
-                                                direction = 'down' if dy > 0 else 'up'
-                                            # Write the connection to file
-                                            if connected_circular_elements[0].name_label.toPlainText() == '0':
-                                                file.write(f'W {name} 0; {direction}\n')
-                                            elif name == '0':
-                                                file.write(f'W 0 {connected_circular_elements[0].name_label.toPlainText()}; {direction}\n')
-                                            else:
-                                                file.write(f'W {name} {connected_circular_elements[0].name_label.toPlainText()}; {direction}\n')
+                                    print(f'name1: {name1}\nname2: {name2}\nconnection0: {circular_connection[0]}\nconnection1: {circular_connection[1]}')
+                                    if  name1 == circular_connection[0]:
+                                        # print(f'node 1 = {name1}')
+                                        node1_pos = self.get_node_positions_by_name(connected_element, name1)
+                                        print(f'node1_pos {node1_pos}')
+                                    if name2 == circular_connection[1]:
+                                        # print(f'node 2 = {name2}')
+                                        node2_pos = self.get_node_positions_by_name(circular_element, name2)
+                                        print(f'node2_pos {node2_pos}')
+                                # Ensure both nodes are found before proceeding
+                                if node1_pos is not None and node2_pos is not None:
+                                    # Calculate direction based on relative positions of nodes
+                                    dx = node2_pos.x() - node1_pos.x()
+                                    dy = node2_pos.y() - node1_pos.y()
+                                    if abs(dx) > abs(dy):
+                                        direction = 'right' if dx > 0 else 'left'
+                                    else:
+                                        direction = 'down' if dy > 0 else 'up'
+                                    print(f'Direction: {direction}')
+                                    # Write the connection to file
+                                    file.write(f'W {circular_connection[0]} {circular_connection[1]}; {direction}\n')
+                                # else:
+                                    # print('THIS IS NOT WORKING, some are NONE')
                                 # Add the circular connection to the set of printed connections
+                                
+                                
                                 printed_circular_connections.add(circular_connection)
                     elif len(connected_circular_elements) > 2:
                         print(f"Error: More than three nodes connected together.")
 
-    # def access_voltage_source_label(self, voltage_source_name):
-    #     for item in self.scene().items():
-    #         if isinstance(item, VoltageSource) and item.name == voltage_source_name:
-    #             return item.name_label
-    #     return None
+    def get_node_positions_by_name(self, element, target_name):
+        print(f"Searching for {target_name} in element {element.name_label.toPlainText()}")
+        for node in element.nodes:
+            print(f"Node in {element.name_label.toPlainText()}: Checking if {element.name_label.toPlainText()} == {target_name}")
+            if element.name_label.toPlainText().strip() == target_name.strip():
+                print(f"Node position found for {target_name} in {element.name_label.toPlainText()}: {node.scenePos()}")
+                return node.scenePos()
+        print(f"No node found for {target_name} in {element.name_label.toPlainText()}")
+        return None
+
 
     def checkNumNodesOnCanvas(self):
         num_nodes = sum(1 for item in self.scene().items() if isinstance(item, CircularElement))
