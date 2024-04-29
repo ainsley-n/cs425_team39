@@ -37,7 +37,7 @@ class AnalysisWindow(QtWidgets.QMainWindow):
         self.ui.MeshAnalysis.clicked.connect(lambda: controller.PerformAnalysis('Mesh analysis'))
         self.ui.actionNodal.triggered.connect(lambda: controller.PerformAnalysis('Nodal analysis'))
         self.ui.NodeAnalysis.clicked.connect(lambda: controller.PerformAnalysis('Nodal analysis'))
-        #self.ui.TheveninAnalysis.clicked.connect(lambda: controller.PerformTheveninAnalysis())
+        self.ui.TheveninAnalysis.clicked.connect(lambda: controller.PerformTheveninAnalysis())
         self.ui.NortonAnalysis.clicked.connect(lambda: controller.PerformNortonAnalysis())
         self.ui.backButton.clicked.connect(lambda: self.ui.stackedWidget.setCurrentIndex(0))
         
@@ -73,20 +73,10 @@ class Controller():
             try:
                 new_circuit = create_circuit_from_file(new_file_path)
             except FileNotFoundError:
-                msg = QtWidgets.QMessageBox()
-                msg.setIcon(QtWidgets.QMessageBox.Critical)
-                msg.setText("Error")
-                msg.setInformativeText('File Does Not Exist')
-                msg.setWindowTitle("Error")
-                msg.exec_()
+                self.ErrorBox('File not found.\nTry again.')
                 return
             except ValueError:
-                msg = QtWidgets.QMessageBox()
-                msg.setIcon(QtWidgets.QMessageBox.Critical)
-                msg.setText("Error")
-                msg.setInformativeText('File does not contain a netlist.\nTry again.')
-                msg.setWindowTitle("Error")
-                msg.exec_()
+                self.ErrorBox('File does not contain a netlist.\nTry again.')
                 return
 
             self.file_path = new_file_path
@@ -98,12 +88,7 @@ class Controller():
             try:
                 self.circuit.draw(self.circuit_image)
             except Exception as e:
-                msg = QtWidgets.QMessageBox()
-                msg.setIcon(QtWidgets.QMessageBox.Critical)
-                msg.setText("Error")
-                msg.setInformativeText(str(e))
-                msg.setWindowTitle("Error")
-                msg.exec_()
+                self.ErrorBox(str(e))
                 return
 
             self.mainMenu.hide()
@@ -127,22 +112,12 @@ class Controller():
             try:
                 perform_analysis(self.circuit, analysis_type, self.analysis_image)
             except Exception as e:
-                msg = QtWidgets.QMessageBox()
-                msg.setIcon(QtWidgets.QMessageBox.Critical)
-                msg.setText("Error")
-                msg.setInformativeText(str(e))
-                msg.setWindowTitle("Error")
-                msg.exec_()
+                self.ErrorBox(str(e))
             else:
                 self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
         else:
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("Error")
-            msg.setInformativeText('No circuit loaded.\nPlease load a circuit.')
-            msg.setWindowTitle("Error")
-            msg.exec_()
+            self.ErrorBox('No circuit loaded.\nPlease load a circuit.')
     #PerformAnalysis
         
     def PerformNortonAnalysis(self):
@@ -159,12 +134,7 @@ class Controller():
                 node_list = list(nodes.keys())
                 node_list = sorted([node for node in node_list if node.isnumeric()], key=int)
             except Exception as e:
-                msg = QtWidgets.QMessageBox()
-                msg.setIcon(QtWidgets.QMessageBox.Critical)
-                msg.setText("Error")
-                msg.setInformativeText(str(e))
-                msg.setWindowTitle("Error")
-                msg.exec_()
+                self.ErrorBox(str(e))
                 return
             
             # get user input
@@ -176,33 +146,18 @@ class Controller():
             if not okPressed:
                 return
             if start_node == end_node:
-                msg = QtWidgets.QMessageBox()
-                msg.setIcon(QtWidgets.QMessageBox.Critical)
-                msg.setText("Error")
-                msg.setInformativeText('Start and end nodes cannot be the same.\nPlease try again.')
-                msg.setWindowTitle("Error")
-                msg.exec_()
+                self.ErrorBox('Start and end nodes cannot be the same.\nPlease try again.')
                 return
             
             try:
                 perform_norton_analysis(self.circuit, self.simplified_circuit_image, self.analysis_image, start_node, end_node)
             except Exception as e:
-                msg = QtWidgets.QMessageBox()
-                msg.setIcon(QtWidgets.QMessageBox.Critical)
-                msg.setText("Error")
-                msg.setInformativeText(str(e))
-                msg.setWindowTitle("Error")
-                msg.exec_()
+                self.ErrorBox(str(e))
             else:
                 self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
         else:
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("Error")
-            msg.setInformativeText('No circuit loaded.\nPlease load a circuit.')
-            msg.setWindowTitle("Error")
-            msg.exec_()
+            self.ErrorBox('No circuit loaded.\nPlease load a circuit.')
     #PerformNortonAnalysis
 
     def PerformTheveninAnalysis(self):
@@ -219,12 +174,7 @@ class Controller():
                 node_list = list(nodes.keys())
                 node_list = sorted([node for node in node_list if node.isnumeric()], key=int)
             except Exception as e:
-                msg = QtWidgets.QMessageBox()
-                msg.setIcon(QtWidgets.QMessageBox.Critical)
-                msg.setText("Error")
-                msg.setInformativeText(str(e))
-                msg.setWindowTitle("Error")
-                msg.exec_()
+                self.ErrorBox(str(e))
                 return
             
             # get user input
@@ -236,34 +186,28 @@ class Controller():
             if not okPressed:
                 return
             if start_node == end_node:
-                msg = QtWidgets.QMessageBox()
-                msg.setIcon(QtWidgets.QMessageBox.Critical)
-                msg.setText("Error")
-                msg.setInformativeText('Start and end nodes cannot be the same.\nPlease try again.')
-                msg.setWindowTitle("Error")
-                msg.exec_()
+                self.ErrorBox('Start and end nodes cannot be the same.\nPlease try again.')
                 return
             
             try:
                 perform_thevenin_analysis(self.circuit, self.simplified_circuit_image, self.analysis_image, start_node, end_node)
             except Exception as e:
-                msg = QtWidgets.QMessageBox()
-                msg.setIcon(QtWidgets.QMessageBox.Critical)
-                msg.setText("Error")
-                msg.setInformativeText(str(e))
-                msg.setWindowTitle("Error")
-                msg.exec_()
+                self.ErrorBox(str(e))
             else:
                 self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
         else:
-            msg = QtWidgets.QMessageBox()
-            msg.setIcon(QtWidgets.QMessageBox.Critical)
-            msg.setText("Error")
-            msg.setInformativeText('No circuit loaded.\nPlease load a circuit.')
-            msg.setWindowTitle("Error")
-            msg.exec_()
+            self.ErrorBox('No circuit loaded.\nPlease load a circuit.')
     #PerformTheveninAnalysis
+
+    def ErrorBox(self, message):
+        msg = QtWidgets.QMessageBox()
+        msg.setIcon(QtWidgets.QMessageBox.Critical)
+        msg.setText("Error")
+        msg.setInformativeText(message)
+        msg.setWindowTitle("Error")
+        msg.exec_()
+    #ErrorBox
 
 
 
