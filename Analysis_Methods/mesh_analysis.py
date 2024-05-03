@@ -137,12 +137,12 @@ def sort_by_node(organized_components):
 
 def perform_mesh_analysis(circuit, png_filename=None):
     # Organize components
-    components = parse_netlist(circuit)
-    organized_components = organize_components(components)
+    #components = parse_netlist(circuit)
+    #organized_components = organize_components(components)
     # print(f'Organized Components {organized_components}\n')
     
 
-    sorted_components = sort_by_node(organized_components)
+    #sorted_components = sort_by_node(organized_components)
     #print sorted components
     # print(f'Sorted Components')
     # for node, components_list in sorted_components.items():
@@ -153,7 +153,7 @@ def perform_mesh_analysis(circuit, png_filename=None):
     #     print()
 
     #perform_lcapy_mesh(circuit): Terminal output, kept for reference    
-    perform_lcapy_mesh(circuit)
+    #perform_lcapy_mesh(circuit)
 
 
     # Generate LaTeX and PNG image of mesh equations

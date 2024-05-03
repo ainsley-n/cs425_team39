@@ -31,8 +31,8 @@ def nodal_components(circuit):
 def perform_nodal_analysis(circuit, png_filename=None):
 
     #Terminal Output, kept for reference
-    nodal_components(circuit)
-    print(' ')
+    #nodal_components(circuit)
+    #print(' ')
     
     # Laplace domain
     laplace_result = circuit.laplace().nodal_analysis()
