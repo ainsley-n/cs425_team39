@@ -135,14 +135,14 @@ def sort_by_node(organized_components):
 
 
 
-def perform_mesh_analysis(circuit, png_filename=None):
+def perform_mesh_analysis(circuit):
     # Organize components
-    components = parse_netlist(circuit)
-    organized_components = organize_components(components)
+    #components = parse_netlist(circuit)
+    #organized_components = organize_components(components)
     # print(f'Organized Components {organized_components}\n')
     
 
-    sorted_components = sort_by_node(organized_components)
+    #sorted_components = sort_by_node(organized_components)
     #print sorted components
     # print(f'Sorted Components')
     # for node, components_list in sorted_components.items():
@@ -152,22 +152,34 @@ def perform_mesh_analysis(circuit, png_filename=None):
     #             print(f"  {component_type} {', '.join(map(str, nodes))}")
     #     print()
 
-    #perform_lcapy_mesh(circuit): Terminal output, kept for reference    
-    perform_lcapy_mesh(circuit)
+    perform_lcapy_mesh(circuit) #Terminal output, kept for reference
 
 
     # Generate LaTeX and PNG image of mesh equations
-    if png_filename is not None:
-        expr = circuit.mesh_analysis().mesh_equations()
-        s = '\\renewcommand{\\arraystretch}{1.3}\n'
-        s = '\\begin{array}{ll}\n'
 
-        for k, v in expr.items():
-            if not isinstance(k, str):
-                k = k.latex()
+    expr = circuit.mesh_analysis().mesh_equations()
+    s = '\\renewcommand{\\arraystretch}{1.3}\n'
+    s = '\\begin{array}{ll}\n'
 
-            s += k + ': & ' + v.latex() + '\\\\ \n'
+    for k, v in expr.items():
+        if not isinstance(k, str):
+            k = k.latex()
 
-        s += '\\end{array}\n'
+        s += k + ': & ' + v.latex() + '\\\\ \n'
 
-        return latex_to_png(s, png_filename)
+    s += '\\end{array}\n'
+
+    return s
+    
+#Get mesh loops
+def get_mesh_loops(circuit):
+    la = LoopAnalysis(circuit)
+    loops = la.loops()
+    mesh_loops_latex = '\\renewcommand{\\arraystretch}{1.3}\n'
+    mesh_loops_latex += '\\begin{array}{ll}\n'
+    for i, loop in enumerate(loops):
+        loop_str = ' -> '.join(str(node) for node in loop)
+        loop_str += f" -> {loop[0]}"  # Add the return to the original node
+        mesh_loops_latex += f"I_{i + 1}: & {loop_str} \\\\ \n"
+    mesh_loops_latex += '\\end{array}\n'
+    return mesh_loops_latex
