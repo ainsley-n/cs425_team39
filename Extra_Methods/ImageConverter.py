@@ -6,7 +6,7 @@ from lcapy.system import tmpfilename, LatexRunner, PDFConverter
 def latex_to_png(s, png_filename):
     tex_filename = tmpfilename('.tex')
     # Need amsmath for operatorname
-    template = ('\\documentclass[a4paper]{standalone}\n'
+    template = ('\\documentclass[a4paper, margin=1mm]{standalone}\n'
                 '\\usepackage{amsmath}\n'
                 '\\begin{document}\n$%s$\n'
                 '\\end{document}\n')
