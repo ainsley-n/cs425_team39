@@ -46,23 +46,34 @@ class Node(QtWidgets.QGraphicsEllipseItem):
 
     def mouseReleaseEvent(self, event):
         if event.button() == QtCore.Qt.LeftButton and self.wire_in_progress:
-            # Find the item at the release point, considering only Node items
-            items_at_release = self.scene().items(self.mapToScene(event.pos()))
-            end_item = next((item for item in items_at_release if isinstance(item, Node) and item != self), None)
+            # Get the release point in scene coordinates
+            release_point = self.mapToScene(event.pos())
 
-            # print(f'End Item: {end_item}')
-            if end_item:
-                # Connect the wire to the end node
-                print(f"Node mouseReleaseEvent - LeftButton: {self.mapToScene(event.pos()).x()}, {self.mapToScene(event.pos()).y()}")
-                self.wire_in_progress.setLine(QtCore.QLineF(self.wire_in_progress.line().p1(), end_item.scenePos()))
+            # Find all Node items in the scene
+            all_nodes = [item for item in self.scene().items() if isinstance(item, Node) and item != self]
+
+            # Find the closest node within 10 pixels radius
+            min_distance = float('inf')
+            closest_node = None
+            for node in all_nodes:
+                distance = (node.scenePos() - release_point).manhattanLength()  # Using manhattanLength to calculate distance
+                if distance < min_distance and distance <= 15:  # Check if within 15 pixels
+                    min_distance = distance
+                    closest_node = node
+
+            if closest_node:
+                # Snap and connect the wire to the closest node
+                print(f"Node mouseReleaseEvent - LeftButton: {release_point.x()}, {release_point.y()}")
+                self.wire_in_progress.setLine(QtCore.QLineF(self.wire_in_progress.line().p1(), closest_node.scenePos()))
                 self.wire_in_progress.start_node = self
-                self.wire_in_progress.end_node = end_item
-                end_item.wire_in_progress = self.wire_in_progress
+                self.wire_in_progress.end_node = closest_node
+                closest_node.wire_in_progress = self.wire_in_progress
             else:
-                # Remove the wire if it doesn't connect to a node
+                # Remove the wire if no suitable node found within the radius
                 self.scene().removeItem(self.wire_in_progress)
 
             self.wire_in_progress = None
+
             
     def connected_wires(self):
         # Return a list of wires connected to this node
