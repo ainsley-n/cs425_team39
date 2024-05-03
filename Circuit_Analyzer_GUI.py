@@ -3,6 +3,7 @@ import os
 from shutil import copyfile
 from PyQt5 import QtWidgets, QtGui, QtCore
 from tempfile import NamedTemporaryFile
+from PyQt5.QtGui import QFont
 
 from GUI.ui_MainMenu import Ui_MainWindow
 from GUI.ui_AnalysisOptions import Ui_AnalysisWindow
@@ -34,9 +35,19 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.openCircuit.clicked.connect(controller.OpenFile)
         self.ui.actionOpen.triggered.connect(controller.OpenFile)
 
+
+        # Attempt to load the font
         font = getFont('Drag_And_Drop_UI/fonts/brasika.otf')
-        font.setPointSize(40)
-        self.ui.label.setFont(font)
+        if font is not None:
+            font.setPointSize(40)
+            self.ui.label.setFont(font)
+        else:
+            try:
+                font =  QFont("Brasika Display - Trial")
+                font.setPointSize(40)
+                self.ui.label.setFont(font)
+            except:
+                print("font loading failed")
 
 class AnalysisWindow(QtWidgets.QMainWindow):
     def __init__(self, controller):

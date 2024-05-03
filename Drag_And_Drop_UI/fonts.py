@@ -1,6 +1,23 @@
 import sys
 from PyQt5.QtWidgets import QApplication, QWidget, QLabel
-from PyQt5.QtGui import QFont, QFontDatabase
+from PyQt5.QtGui import QFontDatabase
+from PyQt5.QtGui import QFont
+
+
+
+
+def getFont(font_path):
+    try:
+        font_id = QFontDatabase.addApplicationFont(font_path)
+        if font_id == -1:
+            print(f"Failed to load font at: {font_path}")
+            return None
+        else:
+            font_family = QFontDatabase.applicationFontFamilies(font_id).at(0)
+            return QFont(font_family)
+    except Exception as e:
+        print(f"An error occurred while loading the font: {e}")
+        return None
 
 
 
