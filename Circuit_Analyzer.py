@@ -78,11 +78,11 @@ def get_node_property(circuit, nodeIndex, property):
 # Dictionary for analysis by ainsley because this looks nicer and makes more sense
 analysis_functions = {
     'Draw circuit': lambda c: c.draw(),
-    'Mesh analysis': lambda c,f=None: perform_mesh_analysis(c,f),
-    'Nodal analysis': lambda c,f=None: perform_nodal_analysis(c,f),
+    'Mesh analysis': lambda c: perform_mesh_analysis(c),
+    'Nodal analysis': lambda c: perform_nodal_analysis(c),
     'Description': lambda c: c.description(),
-    'Thevenin Analysis': lambda c,f=None,e=None,start=None,end=None: perform_thevenin_analysis(c,f,e,start,end),
-    'Norton Analysis': lambda c,f=None,e=None,start=None,end=None: perform_norton_analysis(c,f,e,start,end),
+    'Thevenin Analysis': lambda c,e=None,start=None,end=None: perform_thevenin_analysis(c,e,start,end),
+    'Norton Analysis': lambda c,e=None,start=None,end=None: perform_norton_analysis(c,e,start,end),
     'Thevenin-Norton Transformation': lambda c,f=None: perform_thevenin_transformation(c,f),
     'Norton-Thevenin Transformation': lambda c,f=None: perform_norton_transformation(c,f),
     'State Space Analysis': lambda c: perform_state_space_analysis(c),
@@ -94,15 +94,12 @@ analysis_functions = {
 }
 
 # Call the desired analysis and handle invalid types
-def perform_analysis(circuit, analysis_type, result_filename=None, *args, **kwargs):
+def perform_analysis(circuit, analysis_type, *args, **kwargs):
     
     analysis_function = analysis_functions.get(analysis_type)
     
     if analysis_function:
-        if result_filename:
-            return analysis_function(circuit, result_filename, *args, **kwargs)
-        else:
-            return analysis_function(circuit, *args, **kwargs)
+        return analysis_function(circuit, *args, **kwargs)
     else:
         print("Invalid analysis type. Please choose a valid analysis type.")
         raise ValueError(f"Invalid analysis type: {analysis_type}")
@@ -111,7 +108,7 @@ def perform_analysis(circuit, analysis_type, result_filename=None, *args, **kwar
 # State Space Analysis moved to separate file
 
 # Thevenin Analysis of a linear subcircuit with user defined nodes
-def perform_thevenin_analysis(circuit, simplified_circuit_filename=None, equation_filename=None, startNode=None, endNode=None):
+def perform_thevenin_analysis(circuit, simplified_circuit_filename=None, startNode=None, endNode=None):
     print("This analysis is used to find Thevenin equivalent values between a starting and an end node of a circuit.")
     # Get no value circuit
     empty_circuit_netlist = remove_component_value(circuit.netlist())
@@ -131,13 +128,11 @@ def perform_thevenin_analysis(circuit, simplified_circuit_filename=None, equatio
     # Generate LaTeX and PNG image of unevaluated thevenin equations
     s = thevenin_empty.latex()
     # The output of the system where G is representative of Conductance and I is representitive of the current source.
-    if equation_filename is None:
-        equation_filename = 'temp/thevenin_equations.png'
-    return latex_to_png(s, equation_filename), thevenin
+    return s, thevenin
     
 
 # Norton Analysis of a linear subcircuit with user defined nodes
-def perform_norton_analysis(circuit, simplified_circuit_filename=None, equation_filename=None, startNode=None, endNode=None):
+def perform_norton_analysis(circuit, simplified_circuit_filename=None, startNode=None, endNode=None):
     print("This analysis is used to find Norton equivalent values between a starting and an end node of a circuit.")
     # Get no value circuit
     empty_circuit_netlist = remove_component_value(circuit.netlist())
@@ -156,9 +151,7 @@ def perform_norton_analysis(circuit, simplified_circuit_filename=None, equation_
     # Generate LaTeX and PNG image of unevaluated norton equations
     s = norton_empty.latex()
     # The output of the system where G is representative of Conductance and I is representitive of the current source.
-    if equation_filename is None:
-        equation_filename = 'temp/norton_equations.png'
-    return latex_to_png(s, equation_filename), norton
+    return s, norton
 
 # Thevenin Transformation to norton equivalent using user defined voltage and resistance
 def perform_thevenin_transformation(circuit, png_filename=None):

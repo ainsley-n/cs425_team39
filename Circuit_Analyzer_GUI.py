@@ -8,6 +8,7 @@ from GUI.ui_MainMenu import Ui_MainWindow
 from GUI.ui_AnalysisOptions import Ui_AnalysisWindow
 from GUI.ui_RequestProperty import Ui_RequestProperty
 from Drag_And_Drop_UI import drag_and_drop
+from Drag_And_Drop_UI.fonts import getFont
 
 from Circuit_Analyzer import create_circuit_from_file
 from Circuit_Analyzer import perform_analysis
@@ -18,6 +19,7 @@ from Circuit_Analyzer import get_node_property
 
 from Extra_Methods.LatexConverter import latexSingleTerm
 from Extra_Methods.ImageConverter import latex_to_png
+from Extra_Methods import ImageConverter
 from lcapy import Circuit
 
 dirname = os.path.dirname(__file__)
@@ -31,6 +33,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.actionNew.triggered.connect(controller.OpenEditor)
         self.ui.openCircuit.clicked.connect(controller.OpenFile)
         self.ui.actionOpen.triggered.connect(controller.OpenFile)
+
+        font = getFont('Drag_And_Drop_UI/fonts/brasika.otf')
+        font.setPointSize(40)
+        self.ui.label.setFont(font)
 
 class AnalysisWindow(QtWidgets.QMainWindow):
     def __init__(self, controller):
@@ -102,11 +108,13 @@ class Controller():
     def __init__(self):
         self.file_path = ""
         self.circuit = None
-        self.circuit_image = None
-        self.analysis_image = None
-        self.analysis_pdf = None
+        self.circuit_image = NamedTemporaryFile(suffix='.png', delete=False).name
+        self.analysis_latex = None
+        self.analysis_latex_file = NamedTemporaryFile(suffix='.tex', delete=False).name
+        self.analysis_pdf = self.analysis_latex_file.replace('.tex', '.pdf')
+        self.analysis_image = self.analysis_latex_file.replace('.tex', '.png')
         self.simplified_circuit = None
-        self.simplified_circuit_image = None
+        self.simplified_circuit_image = NamedTemporaryFile(suffix='.png', delete=False).name
         self.simplified_circuit_showing = False
 
         self.editor = drag_and_drop.MainWindow(drag_and_drop.Canvas())
@@ -175,15 +183,25 @@ class Controller():
                 file.write(self.circuit.netlist())
     #SaveFile
 
+    def DoFileConversions(self):
+        if self.analysis_latex is not None:
+            try:
+                self.analysis_latex_file = ImageConverter.get_latex_file(self.analysis_latex, self.analysis_latex_file)
+                self.analysis_pdf = ImageConverter.get_pdf_file(self.analysis_latex_file, self.analysis_pdf)
+                self.analysis_image = ImageConverter.get_png_file(self.analysis_pdf, self.analysis_image)
+            except Exception as e:
+                self.ErrorBox(str(e))
+
     def PerformAnalysis(self, analysis_type):
         if self.circuit is not None:
             if self.analysis_image is None:
                 self.analysis_image = NamedTemporaryFile(suffix='.png', delete=False).name
             try:
-                self.analysis_pdf = perform_analysis(self.circuit, analysis_type, self.analysis_image)
+                self.analysis_latex = perform_analysis(self.circuit, analysis_type)
             except Exception as e:
                 self.ErrorBox(str(e))
             else:
+                self.DoFileConversions()
                 self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
                 self.analysisWindow.ui.switchResult.hide()
@@ -222,10 +240,11 @@ class Controller():
                 return
             
             try:
-                self.analysis_pdf, self.simplified_circuit = perform_norton_analysis(self.circuit, self.simplified_circuit_image, self.analysis_image, start_node, end_node)
+                self.analysis_latex, self.simplified_circuit = perform_norton_analysis(self.circuit, self.simplified_circuit_image, start_node, end_node)
             except Exception as e:
                 self.ErrorBox(str(e))
             else:
+                self.DoFileConversions()
                 self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
                 self.analysisWindow.ui.switchResult.show()
@@ -265,10 +284,11 @@ class Controller():
                 return
             
             try:
-                self.analysis_pdf, self.simplified_circuit = perform_thevenin_analysis(self.circuit, self.simplified_circuit_image, self.analysis_image, start_node, end_node)
+                self.analysis_latex, self.simplified_circuit = perform_thevenin_analysis(self.circuit, self.simplified_circuit_image, start_node, end_node)
             except Exception as e:
                 self.ErrorBox(str(e))
             else:
+                self.DoFileConversions()
                 self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
                 self.analysisWindow.ui.switchResult.show()
@@ -292,13 +312,15 @@ class Controller():
     def ExportResults(self):
         if not self.simplified_circuit_showing:
             # get file path for pdf or png
-            file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', 'Documents/result.pdf', 'PDF Files (*.pdf);;PNG Files (*.png)')[0]
+            file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', 'Documents/result.pdf', 'PDF Files (*.pdf);;PNG Files (*.png);;LaTeX Files (*.tex)')[0]
             if file_path:
                 try:
                     if file_path.endswith('.pdf'):
                         copyfile(self.analysis_pdf, file_path)
                     elif file_path.endswith('.png'):
                         copyfile(self.analysis_image, file_path)
+                    elif file_path.endswith('.tex'):
+                        copyfile(self.analysis_latex_file, file_path)
                     else:
                         self.ErrorBox('Invalid file type.\nPlease select a PDF or PNG file.')
                 except Exception as e:
@@ -313,7 +335,7 @@ class Controller():
     def ExportCircuit(self, circuit):
         if circuit is not None:
             # get file path for pdf or png
-            file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', 'Documents/circuit.pdf', 'PDF Files (*.pdf);;PNG Files (*.png)')[0]
+            file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', 'Documents/circuit.pdf', 'PDF Files (*.pdf);;PNG Files (*.png);;LaTeX Files (*.tex)')[0]
             if file_path:
                 try:
                     if file_path.endswith('.pdf'):
@@ -324,6 +346,11 @@ class Controller():
                     elif file_path.endswith('.png'):
                         # create temp file
                         temp_file = NamedTemporaryFile(suffix='.png', delete=False).name
+                        circuit.draw(temp_file)
+                        copyfile(temp_file, file_path)
+                    elif file_path.endswith('.tex'):
+                        # create temp file
+                        temp_file = NamedTemporaryFile(suffix='.tex', delete=False).name
                         circuit.draw(temp_file)
                         copyfile(temp_file, file_path)
                 except Exception as e:
@@ -361,8 +388,8 @@ class Controller():
             if self.analysis_image is None:
                 self.analysis_image = NamedTemporaryFile(suffix='.png', delete=False).name
             try:
-                latex = latexSingleTerm(property_value, property)
-                self.analysis_pdf = latex_to_png(latex, self.analysis_image)
+                self.analysis_latex = latexSingleTerm(property_value, property)
+                self.DoFileConversions()
             except Exception as e:
                 self.ErrorBox(str(e))
                 return
