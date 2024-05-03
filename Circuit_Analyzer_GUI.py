@@ -307,13 +307,15 @@ class Controller():
     def ExportResults(self):
         if not self.simplified_circuit_showing:
             # get file path for pdf or png
-            file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', 'Documents/result.pdf', 'PDF Files (*.pdf);;PNG Files (*.png)')[0]
+            file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', 'Documents/result.pdf', 'PDF Files (*.pdf);;PNG Files (*.png);;LaTeX Files (*.tex)')[0]
             if file_path:
                 try:
                     if file_path.endswith('.pdf'):
                         copyfile(self.analysis_pdf, file_path)
                     elif file_path.endswith('.png'):
                         copyfile(self.analysis_image, file_path)
+                    elif file_path.endswith('.tex'):
+                        copyfile(self.analysis_latex_file, file_path)
                     else:
                         self.ErrorBox('Invalid file type.\nPlease select a PDF or PNG file.')
                 except Exception as e:
@@ -328,7 +330,7 @@ class Controller():
     def ExportCircuit(self, circuit):
         if circuit is not None:
             # get file path for pdf or png
-            file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', 'Documents/circuit.pdf', 'PDF Files (*.pdf);;PNG Files (*.png)')[0]
+            file_path = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File', 'Documents/circuit.pdf', 'PDF Files (*.pdf);;PNG Files (*.png);;LaTeX Files (*.tex)')[0]
             if file_path:
                 try:
                     if file_path.endswith('.pdf'):
@@ -339,6 +341,11 @@ class Controller():
                     elif file_path.endswith('.png'):
                         # create temp file
                         temp_file = NamedTemporaryFile(suffix='.png', delete=False).name
+                        circuit.draw(temp_file)
+                        copyfile(temp_file, file_path)
+                    elif file_path.endswith('.tex'):
+                        # create temp file
+                        temp_file = NamedTemporaryFile(suffix='.tex', delete=False).name
                         circuit.draw(temp_file)
                         copyfile(temp_file, file_path)
                 except Exception as e:
@@ -376,8 +383,8 @@ class Controller():
             if self.analysis_image is None:
                 self.analysis_image = NamedTemporaryFile(suffix='.png', delete=False).name
             try:
-                latex = latexSingleTerm(property_value, property)
-                self.analysis_pdf = latex_to_png(latex, self.analysis_image)
+                self.analysis_latex = latexSingleTerm(property_value, property)
+                self.DoFileConversions()
             except Exception as e:
                 self.ErrorBox(str(e))
                 return
