@@ -8,7 +8,7 @@ from Drag_And_Drop_UI.inductorSource import Inductor
 from Drag_And_Drop_UI.wire import Wire
 
 class Canvas(QtWidgets.QGraphicsView):
-    def __init__(self, parent=None):
+    def __init__(self, parent=None, controller=None):
         super(Canvas, self).__init__(parent)
         self.setScene(QtWidgets.QGraphicsScene(self))
         self.setSceneRect(QtCore.QRectF(self.viewport().rect()))
@@ -19,7 +19,16 @@ class Canvas(QtWidgets.QGraphicsView):
         # Add a button to save the order
         self.save_button = QtWidgets.QPushButton("Save Order", self)
         self.save_button.clicked.connect(self.save_order)
+        
+        # Add an export button to display proper layout
+        self.export_button = QtWidgets.QPushButton("Export", self)
+        self.export_button.clicked.connect(self.export)
+        self.export_button.setStyleSheet("background-color: #E29462; color: white; border: 1px solid #DB8156;")
 
+        
+        # Set the position of the export button to the bottom right corner
+        button_size = self.export_button.sizeHint()
+        self.export_button.move(self.viewport().width() - button_size.width() - 3, self.viewport().height() - button_size.height() - 3)
         
         # Change the background color of the button using CSS
         self.save_button.setStyleSheet("background-color: #E29462; color: white; border: 1px solid #DB8156;")
@@ -33,8 +42,7 @@ class Canvas(QtWidgets.QGraphicsView):
         scene_rect = self.sceneRect()
         canvas_width = scene_rect.width()
         canvas_height = scene_rect.height()
-        # print(f"Canvas Width: {canvas_width}, Canvas Height: {canvas_height}")
-        
+        # print(f"Canvas Width: {canvas_width}, Canvas Height: {canvas_height}") 
         
     def keyPressEvent(self, event):
         if event.key() == QtCore.Qt.Key_Backspace:
@@ -62,6 +70,20 @@ class Canvas(QtWidgets.QGraphicsView):
             super().keyPressEvent(event)
         
     def save_order(self):
+        file_path = QtWidgets.QFileDialog.getSaveFileName(self, 'Save Order', '', 'Text Files (*.txt);;All Files (*)')[0]
+        if file_path:
+            self.save_to_file(file_path)
+            
+    def export(self):
+        export_file_path = "Circuits/exported_order.txt"
+        if export_file_path:
+            print('Export completed to:', export_file_path)
+            self.save_to_file(export_file_path)
+        else:
+            print("Export failed")
+            
+            
+    def save_to_file(self, file_path):
         # Get the order of elements in the scene
         elements = self.scene().items()
 
@@ -118,7 +140,7 @@ class Canvas(QtWidgets.QGraphicsView):
         
         # Save the order and connection information to a .txt file
 
-        file_path = QtWidgets.QFileDialog.getSaveFileName(self, 'Save Order', '', 'Text Files (*.txt);;All Files (*)')[0]
+        # file_path = QtWidgets.QFileDialog.getSaveFileName(self, 'Save Order', '', 'Text Files (*.txt);;All Files (*)')[0]
 
 
         if file_path:
@@ -211,6 +233,7 @@ class Canvas(QtWidgets.QGraphicsView):
                 return node.scenePos()
         # print(f"No node found for {target_name} in {element.name_label.toPlainText()}")
         return None
+
 
 
     def checkNumNodesOnCanvas(self):
