@@ -20,15 +20,15 @@ class Canvas(QtWidgets.QGraphicsView):
         self.save_button = QtWidgets.QPushButton("Save Order", self)
         self.save_button.clicked.connect(self.save_order)
         
-        # Add an export button to display proper layout
-        self.export_button = QtWidgets.QPushButton("Export", self)
-        self.export_button.clicked.connect(self.export)
-        self.export_button.setStyleSheet("background-color: #E29462; color: white; border: 1px solid #DB8156;")
+        # # Add an export button to display proper layout
+        # self.export_button = QtWidgets.QPushButton("Export", self)
+        # self.export_button.clicked.connect(self.export)
+        # self.export_button.setStyleSheet("background-color: #E29462; color: white; border: 1px solid #DB8156;")
 
         
-        # Set the position of the export button to the bottom right corner
-        button_size = self.export_button.sizeHint()
-        self.export_button.move(self.viewport().width() - button_size.width() - 3, self.viewport().height() - button_size.height() - 3)
+        # # Set the position of the export button to the bottom right corner
+        # button_size = self.export_button.sizeHint()
+        # self.export_button.move(self.viewport().width() - button_size.width() - 3, self.viewport().height() - button_size.height() - 3)
         
         # Change the background color of the button using CSS
         self.save_button.setStyleSheet("background-color: #E29462; color: white; border: 1px solid #DB8156;")
