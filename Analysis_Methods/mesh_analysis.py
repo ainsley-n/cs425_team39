@@ -152,8 +152,7 @@ def perform_mesh_analysis(circuit, png_filename=None):
     #             print(f"  {component_type} {', '.join(map(str, nodes))}")
     #     print()
 
-    #perform_lcapy_mesh(circuit): Terminal output, kept for reference    
-    #perform_lcapy_mesh(circuit)
+    perform_lcapy_mesh(circuit) #Terminal output, kept for reference
 
 
     # Generate LaTeX and PNG image of mesh equations
@@ -171,3 +170,16 @@ def perform_mesh_analysis(circuit, png_filename=None):
         s += '\\end{array}\n'
 
         return latex_to_png(s, png_filename)
+    
+#Get mesh loops
+def get_mesh_loops(circuit):
+    la = LoopAnalysis(circuit)
+    loops = la.loops()
+    mesh_loops_latex = '\\renewcommand{\\arraystretch}{1.3}\n'
+    mesh_loops_latex += '\\begin{array}{ll}\n'
+    for i, loop in enumerate(loops):
+        loop_str = ' -> '.join(str(node) for node in loop)
+        loop_str += f" -> {loop[0]}"  # Add the return to the original node
+        mesh_loops_latex += f"I_{i + 1}: & {loop_str} \\\\ \n"
+    mesh_loops_latex += '\\end{array}\n'
+    return mesh_loops_latex
