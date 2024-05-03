@@ -8,6 +8,7 @@ from GUI.ui_MainMenu import Ui_MainWindow
 from GUI.ui_AnalysisOptions import Ui_AnalysisWindow
 from GUI.ui_RequestProperty import Ui_RequestProperty
 from Drag_And_Drop_UI import drag_and_drop
+from Drag_And_Drop_UI.fonts import getFont
 
 from Circuit_Analyzer import create_circuit_from_file
 from Circuit_Analyzer import perform_analysis
@@ -32,6 +33,10 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.actionNew.triggered.connect(controller.OpenEditor)
         self.ui.openCircuit.clicked.connect(controller.OpenFile)
         self.ui.actionOpen.triggered.connect(controller.OpenFile)
+
+        font = getFont('Drag_And_Drop_UI/fonts/brasika.otf')
+        font.setPointSize(40)
+        self.ui.label.setFont(font)
 
 class AnalysisWindow(QtWidgets.QMainWindow):
     def __init__(self, controller):
