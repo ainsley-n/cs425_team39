@@ -35,6 +35,7 @@ class MainWindow(QtWidgets.QMainWindow):
         self.ui.openCircuit.clicked.connect(controller.OpenFile)
         self.ui.actionOpen.triggered.connect(controller.OpenFile)
 
+
         # Attempt to load the font
         font = getFont('Drag_And_Drop_UI/fonts/brasika.otf')
         if font is not None:

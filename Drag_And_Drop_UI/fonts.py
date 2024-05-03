@@ -20,6 +20,20 @@ def getFont(font_path):
         return None
 
 
+
+def getFont(font_path):
+    # Load the font from a file
+    font_id = QFontDatabase.addApplicationFont(font_path)
+    
+    # Check if the font was loaded successfully
+    if font_id != -1:
+        font_family = QFontDatabase.applicationFontFamilies(font_id)[0]
+        return QFont(font_family)
+    else:
+        print("Font loading failed.")
+        return None
+
+
 def main():
     # Create an instance of QApplication
     app = QApplication(sys.argv)
