@@ -18,6 +18,7 @@ from Circuit_Analyzer import get_node_property
 
 from Extra_Methods.LatexConverter import latexSingleTerm
 from Extra_Methods.ImageConverter import latex_to_png
+from Extra_Methods import ImageConverter
 from lcapy import Circuit
 
 dirname = os.path.dirname(__file__)
@@ -102,11 +103,13 @@ class Controller():
     def __init__(self):
         self.file_path = ""
         self.circuit = None
-        self.circuit_image = None
-        self.analysis_image = None
-        self.analysis_pdf = None
+        self.circuit_image = NamedTemporaryFile(suffix='.png', delete=False).name
+        self.analysis_latex = None
+        self.analysis_latex_file = NamedTemporaryFile(suffix='.tex', delete=False).name
+        self.analysis_pdf = self.analysis_latex_file.replace('.tex', '.pdf')
+        self.analysis_image = self.analysis_latex_file.replace('.tex', '.png')
         self.simplified_circuit = None
-        self.simplified_circuit_image = None
+        self.simplified_circuit_image = NamedTemporaryFile(suffix='.png', delete=False).name
         self.simplified_circuit_showing = False
 
         self.editor = drag_and_drop.MainWindow(drag_and_drop.Canvas())
@@ -175,15 +178,25 @@ class Controller():
                 file.write(self.circuit.netlist())
     #SaveFile
 
+    def DoFileConversions(self):
+        if self.analysis_latex is not None:
+            try:
+                self.analysis_latex_file = ImageConverter.get_latex_file(self.analysis_latex, self.analysis_latex_file)
+                self.analysis_pdf = ImageConverter.get_pdf_file(self.analysis_latex_file, self.analysis_pdf)
+                self.analysis_image = ImageConverter.get_png_file(self.analysis_pdf, self.analysis_image)
+            except Exception as e:
+                self.ErrorBox(str(e))
+
     def PerformAnalysis(self, analysis_type):
         if self.circuit is not None:
             if self.analysis_image is None:
                 self.analysis_image = NamedTemporaryFile(suffix='.png', delete=False).name
             try:
-                self.analysis_pdf = perform_analysis(self.circuit, analysis_type, self.analysis_image)
+                self.analysis_latex = perform_analysis(self.circuit, analysis_type)
             except Exception as e:
                 self.ErrorBox(str(e))
             else:
+                self.DoFileConversions()
                 self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
                 self.analysisWindow.ui.switchResult.hide()
@@ -222,10 +235,11 @@ class Controller():
                 return
             
             try:
-                self.analysis_pdf, self.simplified_circuit = perform_norton_analysis(self.circuit, self.simplified_circuit_image, self.analysis_image, start_node, end_node)
+                self.analysis_latex, self.simplified_circuit = perform_norton_analysis(self.circuit, self.simplified_circuit_image, start_node, end_node)
             except Exception as e:
                 self.ErrorBox(str(e))
             else:
+                self.DoFileConversions()
                 self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
                 self.analysisWindow.ui.switchResult.show()
@@ -265,10 +279,11 @@ class Controller():
                 return
             
             try:
-                self.analysis_pdf, self.simplified_circuit = perform_thevenin_analysis(self.circuit, self.simplified_circuit_image, self.analysis_image, start_node, end_node)
+                self.analysis_latex, self.simplified_circuit = perform_thevenin_analysis(self.circuit, self.simplified_circuit_image, start_node, end_node)
             except Exception as e:
                 self.ErrorBox(str(e))
             else:
+                self.DoFileConversions()
                 self.analysisWindow.ui.SolutionImage.setPixmap(QtGui.QPixmap(self.analysis_image))
                 self.analysisWindow.ui.stackedWidget.setCurrentIndex(1)
                 self.analysisWindow.ui.switchResult.show()

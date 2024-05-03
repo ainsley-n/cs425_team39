@@ -135,7 +135,7 @@ def sort_by_node(organized_components):
 
 
 
-def perform_mesh_analysis(circuit, png_filename=None):
+def perform_mesh_analysis(circuit):
     # Organize components
     #components = parse_netlist(circuit)
     #organized_components = organize_components(components)
@@ -156,20 +156,20 @@ def perform_mesh_analysis(circuit, png_filename=None):
 
 
     # Generate LaTeX and PNG image of mesh equations
-    if png_filename is not None:
-        expr = circuit.mesh_analysis().mesh_equations()
-        s = '\\renewcommand{\\arraystretch}{1.3}\n'
-        s = '\\begin{array}{ll}\n'
 
-        for k, v in expr.items():
-            if not isinstance(k, str):
-                k = k.latex()
+    expr = circuit.mesh_analysis().mesh_equations()
+    s = '\\renewcommand{\\arraystretch}{1.3}\n'
+    s = '\\begin{array}{ll}\n'
 
-            s += k + ': & ' + v.latex() + '\\\\ \n'
+    for k, v in expr.items():
+        if not isinstance(k, str):
+            k = k.latex()
 
-        s += '\\end{array}\n'
+        s += k + ': & ' + v.latex() + '\\\\ \n'
 
-        return latex_to_png(s, png_filename)
+    s += '\\end{array}\n'
+
+    return s
     
 #Get mesh loops
 def get_mesh_loops(circuit):

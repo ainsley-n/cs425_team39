@@ -5,7 +5,7 @@ from lcapy.system import tmpfilename, LatexRunner, PDFConverter
 
 def get_latex_file(s, tex_filename):
     # Need amsmath for operatorname
-    template = ('\\documentclass[a4paper, margin=1mm]{standalone}\n'
+    template = ('\\documentclass[a4paper, margin=1mm, varwidth]{standalone}\n'
                 '\\usepackage{amsmath}\n'
                 '\\begin{document}\n$%s$\n'
                 '\\end{document}\n')

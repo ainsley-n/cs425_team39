@@ -28,7 +28,7 @@ def nodal_components(circuit):
         
 
 # Nodal analysis equations done by ainsley
-def perform_nodal_analysis(circuit, png_filename=None):
+def perform_nodal_analysis(circuit):
 
     #Terminal Output, kept for reference
     #nodal_components(circuit)
@@ -55,19 +55,19 @@ def perform_nodal_analysis(circuit, png_filename=None):
 
 
     # LaTeX and PNG Output
-    if png_filename is not None:
-        expr = circuit.nodal_analysis().nodal_equations()
-        s = '\\renewcommand{\\arraystretch}{1.3}\n'
-        s += '\\begin{array}{ll}\n'
 
-        for k, v in expr.items():
-            if not isinstance(k, str):
-                k = k.latex()
+    expr = circuit.nodal_analysis().nodal_equations()
+    s = '\\renewcommand{\\arraystretch}{1.3}\n'
+    s += '\\begin{array}{ll}\n'
 
-            s += k + ': & ' + v.latex() + '\\\\ \n'
+    for k, v in expr.items():
+        if not isinstance(k, str):
+            k = k.latex()
 
-        s += '\\end{array}\n'
+        s += k + ': & ' + v.latex() + '\\\\ \n'
 
-        return latex_to_png(s, png_filename)
+    s += '\\end{array}\n'
+
+    return s
 
 
