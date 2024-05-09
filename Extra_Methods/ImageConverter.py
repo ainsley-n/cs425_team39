@@ -1,5 +1,4 @@
-#This segment of code was found in various locations in the Lcapy package.
-#This is an extracted helper function that converts a LaTeX string to a PNG image.
+#This segment of code was found within the Lcapy package and has been modified to suit the needs of the project.
 
 from lcapy.system import tmpfilename, LatexRunner, PDFConverter
 
